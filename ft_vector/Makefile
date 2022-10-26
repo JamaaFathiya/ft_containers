@@ -1,47 +1,32 @@
-NAME        = ft_containers
-    
-CC            = c++
-FLAGS        = -Wall -Wextra -Werror -std=c++98
-RM            = rm -rf
+NAME	= ft_containers
+CC		= c++ -Wall -Wextra -Werror -std=c++98 -g
+RM		= rm -rf
 
-OBJDIR = build
+FILES	= ft_vector
 
-FILES        =  vector
+SRC		= $(FILES:=.cpp)
+OBJ		= $(FILES:=.o)
 
-SRC            = $(FILES:=.cpp)
-OBJ            = $(addprefix $(OBJDIR)/, $(FILES:=.o))
-HEADER        = vector.hpp ft_iterator.hpp iterator_traits.hpp
+INCLUDES	= ft_vector.hpp ft_iterator.hpp ft_iterator_traits.hpp
 
-#Colors:
-GREEN        =    \e[92;5;118m
-YELLOW        =    \e[93;5;226m
-GRAY        =    \e[33;2;37m
-RESET        =    \e[0m
-CURSIVE        =    \e[33;3m
-
-#Debug 
-ifeq ($(DEBUG), 1)
-   OPTS = -g
-endif
+GREEN 	= \x1b[42m
+END		= \e[0m
 
 .PHONY: all clean fclean re
 
 all: $(NAME)
 
-$(NAME): $(OBJ) $(HEADER)
-    @ $(CC) $(OBJ) $(OPTS) -o $(NAME)
-    @printf "$(_SUCCESS) $(GREEN)- Executable ready.\n$(RESET)"
+$(NAME): $(OBJ) $(INCLUDES)
+	@$(CC) $(OBJ) -o $(NAME)
+	@printf " $(GREEN) SUCCESS $(END)\n"
 
-$(OBJDIR)/%.o: %.cpp $(HEADER)
-    @mkdir -p $(dir $@)
-    @$(CC) $(FLAGS) $(OPTS) -c $< -o $@
+%.o: %.cpp $(INCLUDES)
+	@$(CC) -c $< -o $@
 
 clean:
-    @$(RM) $(OBJDIR) $(OBJ)
-    @printf "$(YELLOW)    - Object files removed.$(RESET)\n"
+	@$(RM) $(OBJ)
 
 fclean: clean
-    @$(RM) $(NAME)
-    @printf "$(YELLOW)    - Executable removed.$(RESET)\n"
+	@$(RM) $(NAME)
 
 re: fclean all
