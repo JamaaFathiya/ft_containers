@@ -23,9 +23,9 @@ int main(){
     tmp1.push_back(5);
     tmp1.push_back(6);
 
-    // tmp.shrink_to_fit();
-    // std::cout << tmp[130] << std::endl;
-    // std::cout << tmp.size() << std::endl;
+    tmp.shrink_to_fit();
+    std::cout << tmp[130] << std::endl;
+    std::cout << tmp.size() << std::endl;
 
     // std::cout << tmp.at(5);
     ft::vector<int>::reverse_iterator iter = tmp.rbegin();
