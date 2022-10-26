@@ -23,43 +23,73 @@ namespace ft
         typedef typename ft::const_iterator<T> const_iterator;
         typedef typename ft::reverse_iterator<T> reverse_iterator;
         typedef typename ft::iterator<T> const_reverse_iterator;
-        allocator_type alloc;
 
     private: //private
         T* _da;
         size_type _size;
         size_type _capacity;
+        allocator_type _alloc;
 
     protected:
         class  OutOfRangeException: public std::exception{
             public:
                 virtual const char* what() const throw() {return ("Exception: Index Out Of Range");}
         };
+
+    /*------------------------- CONSTRUCTORS -----------------------------*/
+
     public:
-        vector(){
-            this->_da = alloc.allocate(1);
-            alloc.construct(this->_da, false);
+        explicit vector(const allocator_type& alloc = allocator_type()): _alloc(alloc){ //Explicit Keyword in C++ is used to mark constructors to not implicitly convert types in C++.
+                this->_da = _alloc.allocate(1);
+                _alloc.construct(this->_da, false);
+                this->_size = 0;
+                this->_capacity = 1;
+        }
+
+        explicit vector(size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type()): _alloc(alloc){
+            if(n > 0)
+            {
+                this->_da = _alloc.allocate(n);
+                construct_false(this->_da,  n, val);
+                this->_size = n;
+                this->_capacity = n;
+            }
+        }
+
+        template <class InputIterator>// SFINAE subtitution failure it's not an error
+        /* when we call a constructor with two parameters with the same type the compiler choose the third constructor
+        because it muchs perfectely the paramters(beeing the same type) but the subtitution of the parameters fails (which not an erro)
+        */
+        vector (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type()): _alloc(alloc){
             this->_size = 0;
             this->_capacity = 1;
+            this->_da = _alloc.allocate(1);
+            _alloc.construct(this->_da, false);
+            for(; first != last; first++)
+                push_back(*first);
         }
 
-        explicit vector(size_type n, const value_type& val = value_type()){
-            this->_da = alloc.allocate(n);
-            alloc.construct_all(this->_da, val, n);
-            this->_size = 0;
-            this->_capacity = n;
+        vector (const vector& x){
+            if (this != &x){
+                this->_alloc = x._alloc;
+                this->_size = x._size;
+                this->_capacity = x._capacity;
+                this->_da = _alloc.allocate(this->_capacity);
+                construct_false(this->_da, this->_capacity, false);
+                std::memcpy(this->_da, x._da, this->_size * sizeof(size_type));
+            }
         }
+
+        /*----------------------- DESTRUCTOR ------------------------*/
+
         ~vector(){
-            // std::cout << " destructor " << std::endl;
+            if (this->_da)
+            {
+                destroy_all(this->_da, this->_capacity);
+                _alloc.deallocate(this->_da, this->_capacity);
+            }
         }
         
-        
-
-        /*------------------------- Modifiers ----------------------------*/
-
-
-
-
         /*---------------------------- Iterators -------------------------*/
 
         iterator begin(){ //returns iterator to the beginning 
@@ -93,39 +123,41 @@ namespace ft
             return const_reverse_iterator(this->_da);
         }
 
-        /*-----------------------------------------------------*/
-        /*---------------------Utilitis------------------------*/
+        /*-----------------------------------------------------------------*/
+        /*---------------------------Utilitis------------------------------*/
 
         void construct_all(pointer dest, pointer src, size_type n){
             if (dest && src){
                 for(size_type i=0; i<n; i++)
-                    alloc.construct(&dest[i], &src[i]);
+                    _alloc.construct(&dest[i], &src[i]);
             }
         }
-        void construct_false(pointer dest, size_type n){
+        void construct_false(pointer dest, size_type n, const value_type& val){
                 for(size_type i=0; i<n ; i++)
-                    alloc.construct(&dest[i], false);
+                    _alloc.construct(&dest[i], val);
         }
+
         void destroy_all(pointer p, size_type n){
                 for(size_type i=0; i<n; i++)
-                    alloc.destroy(&p[i]);
+                    _alloc.destroy(&p[i]);
         }
 
         void extand(int new_capacity){
-            pointer tmp = alloc.allocate(new_capacity);
-            construct_false(tmp, new_capacity);
+            pointer tmp = _alloc.allocate(new_capacity);
+            construct_false(tmp, new_capacity, false);
             std::memcpy(tmp, this->_da, this->_size * sizeof(size_type));
             destroy_all(this->_da, this->_capacity);
-            alloc.deallocate(this->_da, this->_capacity);
+            _alloc.deallocate(this->_da, this->_capacity);
             this->_da = tmp;
             this->_capacity = new_capacity;
         }
-        /*----------------------------------------------------*/
-        /*--------------------- Modifiers --------------------*/
+
+        /*---------------------------------------------------------------*/
+        /*---------------------------- Modifiers ------------------------*/
         // iterator insert (iterator position, const value_type& val){
 
         // }
-        
+       
         void push_back(const value_type& val){
             if (this->_size >= this->_capacity)
                 this->extand(this->_capacity * 2);
@@ -139,8 +171,8 @@ namespace ft
                 _size--;
             }
         }
-        /*---------------------------------------------------*/
-        /*---------------------Capacity----------------------*/
+        /*------------------------------------------------------------*/
+        /*--------------------------Capacity--------------------------*/
 
 
         size_type size() const{ //returns the number of elements in the vector
@@ -183,8 +215,8 @@ namespace ft
             this->extand(this->_size);
         }
 
-        /*---------------------------------------------------*/
-         /*-------------- Element Access --------------------*/
+        /*-------------------------------------------------------------*/
+         /*-------------------- Element Access ------------------------*/
 
         reference operator[] (size_type n){
             if (n <= this->_size && n >= this->_size)
@@ -241,6 +273,6 @@ namespace ft
          const value_type* data() const throw() {
             return this->_da;
          }
-        /*-----------------------------------------------------*/
+        /*----------------------------------------------------------*/
     };
 };
