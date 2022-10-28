@@ -20,6 +20,7 @@ namespace ft
         typedef typename allocator_type::const_reference const_reference;
         typedef typename allocator_type::size_type       size_type;
         typedef typename allocator_type::pointer         pointer;
+        typedef typename ft::iterator<T>::difference_type difference;
         typedef typename ft::iterator<T> iterator;
         typedef typename ft::const_iterator<T> const_iterator;
         typedef typename ft::reverse_iterator<T> reverse_iterator;
@@ -160,10 +161,48 @@ namespace ft
 
         /*---------------------------------------------------------------*/
         /*---------------------------- Modifiers ------------------------*/
-        // iterator insert (iterator position, const value_type& val){
 
-        // }
-       
+        template <class InputIterator>  
+        void assign (typename ft::enable_if< std::is_class<InputIterator>::value , InputIterator>::type first, InputIterator last){
+            InputIterator tmp;
+            tmp =  first;
+            size_type count = 0;;
+
+            for(; tmp != last; tmp++)
+                count++;
+
+            if (count > this->_capacity)
+            {
+                this->destroy_all(this->_da, this->_capacity);
+                this->_alloc.deallocate(this->_da, this->_capacity);
+                this->_da = this->_alloc.allocate(count);
+                this->_capacity = count;
+            }
+            else
+                this->destroy_all(this->_da, this->_size);
+
+            this->_size = 0;
+            for(; first != last; first++)
+                push_back(*first);
+         }
+
+        void assign (size_type n, const value_type& val){//any element held int the container before the call are destroyed
+       // This causes an automatic reallocation of the allocated storage space if -and only if- the new vector size
+       // surpasses the current vector capacity.
+            if (n > this->_capacity)
+            {
+                this->destroy_all(this->_da, this->_capacity);
+                this->_alloc.deallocate(this->_da, this->_capacity);
+                this->_da = this->_alloc.allocate(n);
+                this->_capacity = n;
+            }
+            else
+                this->destroy_all(this->_da, this->_size);
+
+            this->_size = n;
+            this->construct_false(this->_da, n, val);
+       }
+
         void push_back(const value_type& val){
             if (this->_size >= this->_capacity)
                 this->extand(this->_capacity * 2);
@@ -177,6 +216,11 @@ namespace ft
                 _size--;
             }
         }
+
+        // iterator insert (iterator position, const value_type& val){
+ 
+
+        // }
         /*------------------------------------------------------------*/
         /*--------------------------Capacity--------------------------*/
 
