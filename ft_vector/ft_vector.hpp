@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include "ft_iterator.hpp"
+#include "ft_enabel_if.hpp"
 
 namespace ft
 {
@@ -46,6 +47,25 @@ namespace ft
                 this->_capacity = 1;
         }
 
+
+        template <class InputIterator>// SFINAE subtitution failure it's not an error
+        /* when we call a constructor with two parameters with the same type the compiler choose the third constructor
+        because it muchs perfectely the paramters(beeing the same type) but the subtitution of the parameters fails (which is not an erro)
+        (to invoke the first constructor,
+         the compiler would have to perform a type conversion. The second constructor would fit perfectly though.)
+        */
+        vector (typename ft::enable_if< std::is_class<InputIterator>::value , InputIterator>::type first,
+         InputIterator last, const allocator_type& alloc = allocator_type()): _alloc(alloc){//enabel_if(condition, type) if the condition is true
+         // the specialization of struct enable_if for true is used, and the internal type is set to Inputiterator, if the cond is false the 
+         //general form of enable if is selected, and it doesn't have a type, so the type of the argument results in a subsitutuion failure.
+            this->_size = 0;
+            this->_capacity = 1;
+            this->_da = _alloc.allocate(1);
+            _alloc.construct(this->_da, false);
+            for(; first != last; first++)
+                push_back(*first);
+        }
+
         explicit vector(size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type()): _alloc(alloc){
             if(n > 0)
             {
@@ -55,20 +75,6 @@ namespace ft
                 this->_capacity = n;
             }
         }
-
-        template <class InputIterator>// SFINAE subtitution failure it's not an error
-        /* when we call a constructor with two parameters with the same type the compiler choose the third constructor
-        because it muchs perfectely the paramters(beeing the same type) but the subtitution of the parameters fails (which not an erro)
-        */
-        vector (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type()): _alloc(alloc){
-            this->_size = 0;
-            this->_capacity = 1;
-            this->_da = _alloc.allocate(1);
-            _alloc.construct(this->_da, false);
-            for(; first != last; first++)
-                push_back(*first);
-        }
-
         vector (const vector& x){
             if (this != &x){
                 this->_alloc = x._alloc;
