@@ -43,7 +43,7 @@ namespace ft
     public:
         explicit vector(const allocator_type& alloc = allocator_type()): _alloc(alloc){ //Explicit Keyword in C++ is used to mark constructors to not implicitly convert types in C++.
                 this->_da = _alloc.allocate(1);
-                _alloc.construct(this->_da, false);
+                _alloc.construct(this->_da, value_type());
                 this->_size = 0;
                 this->_capacity = 1;
         }
@@ -62,7 +62,7 @@ namespace ft
             this->_size = 0;
             this->_capacity = 1;
             this->_da = _alloc.allocate(1);
-            _alloc.construct(this->_da, false);
+            _alloc.construct(this->_da, value_type());
             for(; first != last; first++)
                 push_back(*first);
         }
@@ -82,7 +82,7 @@ namespace ft
                 this->_size = x._size;
                 this->_capacity = x._capacity;
                 this->_da = _alloc.allocate(this->_capacity);
-                construct_false(this->_da, this->_capacity, false);
+                construct_false(this->_da, this->_capacity, value_type());
                 std::memcpy(this->_da, x._da, this->_size * sizeof(size_type));
             }
         }
@@ -151,8 +151,8 @@ namespace ft
 
         void extand(int new_capacity){
             pointer tmp = _alloc.allocate(new_capacity);
-            construct_false(tmp, new_capacity, false);
-            std::memcpy(tmp, this->_da, this->_size * sizeof(size_type));
+            construct_false(tmp, new_capacity, value_type());
+            std::memcpy(tmp, this->_da, this->_size * sizeof(value_type));
             destroy_all(this->_da, this->_capacity);
             _alloc.deallocate(this->_da, this->_capacity);
             this->_da = tmp;
@@ -217,10 +217,130 @@ namespace ft
             }
         }
 
-        // iterator insert (iterator position, const value_type& val){
- 
+        void shift_n(size_type n, int pos, const value_type& val){
+            for(int i = this->_size - 1; i >= pos; i--){
+                this->_da[i + n] = this->_da[i];
+                this->_da[i] = val;
+            }
+        }
 
-        // }
+        int index_of_iterator(iterator iter){
+            iterator tmp = this->begin();
+            int index = 0;
+            for (;tmp != iter ; tmp++)
+                index++;
+            return index;
+        }
+
+        iterator insert (iterator position, const value_type& val){
+            if (position < this->begin())
+                return position;
+            else if (position == this->end())
+                    push_back(val);
+            else{
+                size_type new_size = this->_size + 1;
+                int index = this->index_of_iterator(position);
+
+                if (new_size > this->_capacity){
+                    pointer tmp = this->_alloc.allocate(this->_capacity * 2);
+                    this->construct_false(tmp, this->_capacity * 2, value_type());
+                    std::memcpy(tmp, this->_da, index * sizeof(value_type));
+                    tmp[index] = val;
+                    std::memcpy(tmp + (index + 1), this->_da + index, (this->_size - index) * sizeof(value_type) );
+                    this->destroy_all(this->_da, this->_capacity);
+                    this->_alloc.deallocate(this->_da, this->_capacity);
+                    this->_da = tmp;
+                    this->_size = new_size;
+                    this->_capacity = this->_capacity * 2;
+                }
+                else{
+                    shift_n(1, index, val);
+                this->_size = new_size;
+                }
+            }
+            return position;
+        }
+
+        void insert (iterator position, size_type n, const value_type& val){
+            if (position < this->begin())
+                return ;
+            else if (position == this->end())
+                for(size_type i=0; i<n; i++)
+                    push_back(val);
+            else{
+                size_type new_size = this->_size + n;
+                int index = this->index_of_iterator(position);
+
+                if (new_size > this->_capacity){
+                    pointer tmp = this->_alloc.allocate(this->_capacity * 2);
+                    this->construct_false(tmp, this->_capacity * 2, value_type());
+                    std::memcpy(tmp, this->_da, index * sizeof(value_type));
+                    for(size_type i=index; i < index+n; i++)
+                        tmp[i] = val;
+                    std::memcpy(tmp + (index + n), this->_da + index, (this->_size - index) * sizeof(value_type) );
+                    this->destroy_all(this->_da, this->_capacity);
+                    this->_alloc.deallocate(this->_da, this->_capacity);
+                    this->_da = tmp;
+                    this->_size = new_size;
+                    this->_capacity = this->_capacity * 2;
+                }
+                else{
+                    shift_n(n, index, val);
+                    this->_size = new_size;
+                }
+            }
+        }
+        /* insert function iserts a range of iterators in a position 
+        @desc: if the position is the end we iterate and push the elements
+                if the new_size is biger than the capacity a reallocation is done
+                else the elements are shifted count (the number of elments to insert) times and the range of iterators is inserted*/
+        template <class InputIterator>
+        void insert(iterator position, typename ft::enable_if< std::is_class<InputIterator>::value , InputIterator>::type first, InputIterator last){
+            size_type count = 0;
+            for(InputIterator iter=first; iter!=last; iter++)
+                count++;
+
+            if (position < this->begin())
+                return ;
+            else if (position == this->end())
+                for(InputIterator iter=first; iter!=last; iter++)
+                    push_back(*iter);
+            else{
+                size_type new_size = this->_size + count;
+                int index = this->index_of_iterator(position);
+
+                if (new_size > this->_capacity){
+                    pointer tmp = this->_alloc.allocate(this->_capacity * 2);
+                    this->construct_false(tmp, this->_capacity * 2, value_type());
+                    std::memcpy(tmp, this->_da, index * sizeof(value_type));
+
+                    size_type i = index;
+                    InputIterator iter = first;
+                    while(iter!=last){
+                        tmp[i++] = *iter;
+                        iter++; 
+                    }
+
+                    std::memcpy(tmp + (index + count), this->_da + index, (this->_size - index) * sizeof(value_type) );
+                    this->destroy_all(this->_da, this->_capacity);
+                    this->_alloc.deallocate(this->_da, this->_capacity);
+                    this->_da = tmp;
+                    this->_size = new_size;
+                    this->_capacity = this->_capacity * 2;
+                }
+                else{
+                    shift_n(count, index, value_type());
+                    size_type i = index;
+                    InputIterator iter = first;
+                    while(iter!=last){
+                        this->_da[i++] = *iter;                   
+                        iter++;
+                    }
+                    this->_size = new_size;
+                }
+            }
+        }
+
         /*------------------------------------------------------------*/
         /*--------------------------Capacity--------------------------*/
 
