@@ -341,6 +341,32 @@ namespace ft
             }
         }
 
+        void unshift_n(size_type n, int pos){
+            for(size_type i = pos, j = 0; i < this->_size; i++, j++){
+                if (j < n)
+                    this->_alloc.destroy(this->_da + i);
+                this->_da[i] = this->_da[i + n];
+            }
+        }
+
+        iterator erase (iterator position){
+            size_type index = index_of_iterator(position);
+            unshift_n(1, index);
+            this->_size--;
+            return position;
+        }
+
+        iterator erase (iterator first, iterator last){
+            size_type count = 0;
+            size_type index = index_of_iterator(first);
+
+            for(iterator iter = first; iter != last; iter++)
+                count++;
+            unshift_n(count, index);
+            this->_size -= count;
+            return first;
+        }
+
         /*------------------------------------------------------------*/
         /*--------------------------Capacity--------------------------*/
 
