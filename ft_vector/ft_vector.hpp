@@ -77,7 +77,7 @@ namespace ft
                 this->_capacity = n;
             }
         }
-        
+
         vector (const vector& x){
             if (this != &x){
                 this->_alloc = x._alloc;
@@ -213,10 +213,7 @@ namespace ft
 
         void pop_back(){
             if (this->_size)
-            {
-                this->_da[_size - 1] = 0;
-                _size--;
-            }
+                this->_alloc.destroy(_da +( --_size));
         }
 
         void shift_n(size_type n, int pos, const value_type& val){
@@ -352,9 +349,13 @@ namespace ft
         }
 
         iterator erase (iterator position){
-            size_type index = index_of_iterator(position);
-            unshift_n(1, index);
-            this->_size--;
+            if (position >= this->begin() && position < this->end())
+            {
+                size_type index = index_of_iterator(position);
+                unshift_n(1, index);
+                this->_size--;
+
+            }
             return position;
         }
 
@@ -552,7 +553,7 @@ namespace ft
 
     template <class T, class Alloc>
     void swap (vector<T,Alloc>& x, vector<T,Alloc>& y){
-        vector tmp(x);
+        vector<T, Alloc> tmp(x);
 
         x.swap(y);
         y.swap(tmp);
