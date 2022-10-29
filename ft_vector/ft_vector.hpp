@@ -4,6 +4,7 @@
 #include <string>
 #include "ft_iterator.hpp"
 #include "ft_enable_if.hpp"
+#include "ft_lexicographical_compare.hpp"
 
 namespace ft
 {
@@ -76,6 +77,7 @@ namespace ft
                 this->_capacity = n;
             }
         }
+        
         vector (const vector& x){
             if (this != &x){
                 this->_alloc = x._alloc;
@@ -367,6 +369,33 @@ namespace ft
             return first;
         }
 
+        void swap (vector& x){
+            size_type tmp_size;
+            size_type tmp_capacity;
+            pointer tmp_da;
+            allocator_type tmp_alloc;
+
+            tmp_da = this->_da;
+            tmp_size = this->_size;
+            tmp_capacity = this->_capacity;
+            tmp_alloc = this->_alloc;
+
+            this->_da = x._da;
+            this->_size = x._size;
+            this->_capacity = x._capacity;
+            this->_alloc = x._alloc;
+
+            x._da = tmp_da;
+            x._size = tmp_size;
+            x._capacity = tmp_capacity;
+            x._alloc = tmp_alloc;
+        }
+
+        void clear(){
+            destroy_all(this->_da, this->_size);
+            this->_size = 0;
+        }
+
         /*------------------------------------------------------------*/
         /*--------------------------Capacity--------------------------*/
 
@@ -412,7 +441,7 @@ namespace ft
         }
 
         /*-------------------------------------------------------------*/
-         /*-------------------- Element Access ------------------------*/
+        /*-------------------- Element Access -------------------------*/
 
         reference operator[] (size_type n){
             if (n <= this->_size && n >= this->_size)
@@ -470,5 +499,62 @@ namespace ft
             return this->_da;
          }
         /*----------------------------------------------------------*/
+
+        allocator_type get_allocator() const{
+            return this->_alloc;
+        }
+
+        
     };
+
+    /*-------------------- Relational Operators ------------------------*/
+
+    template <class T, class Alloc>  
+    bool operator==(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs){
+        if (lhs.size() == rhs.size()){
+            for (size_t i = 0; i < lhs.size(); i++)
+            {
+                if(lhs[i] != rhs[i])
+                    return false;
+            }
+        }
+        else
+            return false;
+        return true;
+    }
+
+    template <class T, class Alloc>  
+    bool operator!= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs){
+        return (!(lhs == rhs));
+    }
+
+    template <class T, class Alloc> 
+    bool operator<  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
+        return ft::lexicographical_compare(lhs.cbegin(), lhs.cend(), rhs.cbegin(), rhs.cend());
+    }
+
+    template <class T, class Alloc>
+    bool operator>  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs){
+        return rhs < lhs;
+    }
+
+    template <class T, class Alloc> 
+    bool operator<= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs){
+        return !(rhs<lhs);
+    }
+
+    template <class T, class Alloc> 
+    bool operator>= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs){
+        return !(lhs<rhs);
+    }
+
+    /*----------------------------------------------------------*/
+
+    template <class T, class Alloc>
+    void swap (vector<T,Alloc>& x, vector<T,Alloc>& y){
+        vector tmp(x);
+
+        x.swap(y);
+        y.swap(tmp);
+    }
 };
