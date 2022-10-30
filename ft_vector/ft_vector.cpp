@@ -25,8 +25,8 @@ int main(){
     tmp.push_back("5");
     tmp.push_back("6");
 
-  tmp1.clear();
-  tmp.clear();
+  tmp1.insert(tmp1.begin() + 2, "hello");
+  tmp.insert(tmp.begin() + 2, "hello");
 
   std::cout << "size1 = " << tmp1.size() << std::endl;
     std::cout << "capacity1 = " << tmp1.capacity() << std::endl;
