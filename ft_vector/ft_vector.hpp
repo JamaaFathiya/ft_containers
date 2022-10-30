@@ -33,6 +33,60 @@ namespace ft
         size_type _capacity;
         allocator_type _alloc;
 
+        /*-----------------------------------------------------------------*/
+        /*---------------------------Utilitis------------------------------*/
+
+        void construct_all(pointer dest, pointer src, size_type n){
+            if (dest && src){
+                for(size_type i=0; i<n; i++)
+                    _alloc.construct(&dest[i], &src[i]);
+            }
+        }
+        void construct_false(pointer dest, size_type n, const value_type& val){
+                for(size_type i=0; i<n ; i++)
+                    _alloc.construct(&dest[i], val);
+        }
+
+        void destroy_all(pointer p, size_type n){
+                for(size_type i=0; i<n; i++)
+                    _alloc.destroy(&p[i]);
+        }
+
+        void extand(int new_capacity){
+            pointer tmp = _alloc.allocate(new_capacity);
+            construct_false(tmp, new_capacity, value_type());
+            std::memcpy(tmp, this->_da, this->_size * sizeof(value_type));
+            destroy_all(this->_da, this->_capacity);
+            _alloc.deallocate(this->_da, this->_capacity);
+            this->_da = tmp;
+            this->_capacity = new_capacity;
+        }
+
+        void shift_n(size_type n, int pos, const value_type& val){
+            for(int i = this->_size - 1; i >= pos; i--){
+                this->_da[i + n] = this->_da[i];
+                this->_da[i] = val;
+            }
+        }
+
+        void unshift_n(size_type n, int pos){
+            for(size_type i = pos, j = 0; i < this->_size; i++, j++){
+                if (j < n)
+                    this->_alloc.destroy(this->_da + i);
+                this->_da[i] = this->_da[i + n];
+            }
+        }
+
+        int index_of_iterator(iterator iter){
+            iterator tmp = this->begin();
+            int index = 0;
+            for (;tmp != iter ; tmp++)
+                index++;
+            return index;
+        }
+        
+        /*---------------------------------------------------------------*/
+
     protected:
         class  OutOfRangeException: public std::exception{
             public:
@@ -132,36 +186,6 @@ namespace ft
             return const_reverse_iterator(this->_da);
         }
 
-        /*-----------------------------------------------------------------*/
-        /*---------------------------Utilitis------------------------------*/
-
-        void construct_all(pointer dest, pointer src, size_type n){
-            if (dest && src){
-                for(size_type i=0; i<n; i++)
-                    _alloc.construct(&dest[i], &src[i]);
-            }
-        }
-        void construct_false(pointer dest, size_type n, const value_type& val){
-                for(size_type i=0; i<n ; i++)
-                    _alloc.construct(&dest[i], val);
-        }
-
-        void destroy_all(pointer p, size_type n){
-                for(size_type i=0; i<n; i++)
-                    _alloc.destroy(&p[i]);
-        }
-
-        void extand(int new_capacity){
-            pointer tmp = _alloc.allocate(new_capacity);
-            construct_false(tmp, new_capacity, value_type());
-            std::memcpy(tmp, this->_da, this->_size * sizeof(value_type));
-            destroy_all(this->_da, this->_capacity);
-            _alloc.deallocate(this->_da, this->_capacity);
-            this->_da = tmp;
-            this->_capacity = new_capacity;
-        }
-
-        /*---------------------------------------------------------------*/
         /*---------------------------- Modifiers ------------------------*/
 
         template <class InputIterator>  
@@ -214,21 +238,6 @@ namespace ft
         void pop_back(){
             if (this->_size)
                 this->_alloc.destroy(_da +( --_size));
-        }
-
-        void shift_n(size_type n, int pos, const value_type& val){
-            for(int i = this->_size - 1; i >= pos; i--){
-                this->_da[i + n] = this->_da[i];
-                this->_da[i] = val;
-            }
-        }
-
-        int index_of_iterator(iterator iter){
-            iterator tmp = this->begin();
-            int index = 0;
-            for (;tmp != iter ; tmp++)
-                index++;
-            return index;
         }
 
         iterator insert (iterator position, const value_type& val){
@@ -337,14 +346,6 @@ namespace ft
                     }
                     this->_size = new_size;
                 }
-            }
-        }
-
-        void unshift_n(size_type n, int pos){
-            for(size_type i = pos, j = 0; i < this->_size; i++, j++){
-                if (j < n)
-                    this->_alloc.destroy(this->_da + i);
-                this->_da[i] = this->_da[i + n];
             }
         }
 
