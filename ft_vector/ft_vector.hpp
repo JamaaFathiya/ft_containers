@@ -407,7 +407,7 @@ namespace ft
         }
 
         size_type max_size() const{ //return the maximum number of elements that the vector can store
-            return std::numeric_limits<size_type>::max() / sizeof(value_type);
+            return std::numeric_limits<value_type>::max() / sizeof(value_type);
         }
 
         void resize (size_type n, value_type val = value_type()){ //changes the size of the vector to n (either by adding elements of destroying)
