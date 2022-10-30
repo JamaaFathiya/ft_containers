@@ -139,8 +139,18 @@ namespace ft
                 this->_capacity = x._capacity;
                 this->_da = _alloc.allocate(this->_capacity);
                 construct_false(this->_da, this->_capacity, value_type());
-                std::memcpy(this->_da, x._da, this->_size * sizeof(size_type));
+                std::memcpy(this->_da, x._da, this->_size * sizeof(value_type));
             }
+        }
+
+        vector& operator= (const vector& x){
+            if (this->_capacity <  x.size())
+                this->extand(x.capacity());
+            this->_alloc = x._alloc;
+            this->_size = x._size;
+            this->_capacity = x._capacity;
+            std::memcpy(this->_da, x._da, this->_size * sizeof(value_type)); 
+            return *this;
         }
 
         /*----------------------- DESTRUCTOR ------------------------*/
