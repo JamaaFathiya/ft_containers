@@ -24,10 +24,10 @@ namespace ft
         typedef typename ft::iterator<T>::difference_type difference;
         typedef typename ft::iterator<T> iterator;
         typedef typename ft::const_iterator<T> const_iterator;
-        typedef typename ft::reverse_iterator<T> reverse_iterator;
-        typedef typename ft::iterator<T> const_reverse_iterator;
+        typedef typename ft::reverse_iterator<iterator> reverse_iterator;
+        typedef typename ft::reverse_iterator<const_iterator> const_reverse_iterator;
 
-    private: //private
+    private: 
         T* _da;
         size_type _size;
         size_type _capacity;
@@ -42,7 +42,7 @@ namespace ft
                     _alloc.construct(&dest[i], &src[i]);
             }
         }
-        void construct_false(pointer dest, size_type n, const value_type& val){
+        void construct_default(pointer dest, size_type n, const value_type& val = value_type()){
                 for(size_type i=0; i<n ; i++)
                     _alloc.construct(&dest[i], val);
         }
@@ -54,10 +54,13 @@ namespace ft
 
         void extand(int new_capacity){
             pointer tmp = _alloc.allocate(new_capacity);
-            construct_false(tmp, new_capacity, value_type());
+            construct_default(tmp, new_capacity);
             std::memcpy(tmp, this->_da, this->_size * sizeof(value_type));
-            destroy_all(this->_da, this->_capacity);
-            _alloc.deallocate(this->_da, this->_capacity);
+            if (this->_capacity != 0)
+            {
+               destroy_all(this->_da, this->_capacity);
+             _alloc.deallocate(this->_da, this->_capacity);
+            }
             this->_da = tmp;
             this->_capacity = new_capacity;
         }
@@ -97,39 +100,45 @@ namespace ft
 
     public:
         explicit vector(const allocator_type& alloc = allocator_type()): _alloc(alloc){ //Explicit Keyword in C++ is used to mark constructors to not implicitly convert types in C++.
-                this->_da = _alloc.allocate(1);
-                _alloc.construct(this->_da, value_type());
                 this->_size = 0;
-                this->_capacity = 1;
+                this->_capacity = 0;
+                this->_da = nullptr;
         }
 
 
-        template <class InputIterator>// SFINAE subtitution failure it's not an error
+        
+        // SFINAE subtitution failure it's not an error:
         /* when we call a constructor with two parameters with the same type the compiler choose the third constructor
         because it muchs perfectely the paramters(beeing the same type) but the subtitution of the parameters fails (which is not an erro)
         (to invoke the first constructor,
-         the compiler would have to perform a type conversion. The second constructor would fit perfectly though.)
+        the compiler would have to perform a type conversion. The second constructor would fit perfectly though.)
+
+        ENABLE_IF:
+        enabel_if(condition, type) if the condition is true
+        the specialization of struct enable_if for true is used, and the internal type is set to Inputiterator, if the cond is false the 
+         general form of enable if is selected, and it doesn't have a type, so the type of the argument results in a subsitutuion failure.
         */
+        template <class InputIterator>
         vector (typename ft::enable_if< std::is_class<InputIterator>::value , InputIterator>::type first,
-         InputIterator last, const allocator_type& alloc = allocator_type()): _alloc(alloc){//enabel_if(condition, type) if the condition is true
-         // the specialization of struct enable_if for true is used, and the internal type is set to Inputiterator, if the cond is false the 
-         //general form of enable if is selected, and it doesn't have a type, so the type of the argument results in a subsitutuion failure.
-            this->_size = 0;
-            this->_capacity = 1;
-            this->_da = _alloc.allocate(1);
-            _alloc.construct(this->_da, value_type());
+         InputIterator last, const allocator_type& alloc = allocator_type()): _alloc(alloc){
+
+             _size = 0;
+             _capacity = 0;
+
+            for(InputIterator it = first; it != last; it++)
+                _size++;
+            
+            this->_da = _alloc.allocate(_size);
             for(; first != last; first++)
-                push_back(*first);
+                this->_alloc.construct(this->_da + (_capacity++), *first);
         }
 
         explicit vector(size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type()): _alloc(alloc){
-            if(n > 0)
-            {
-                this->_da = _alloc.allocate(n);
-                construct_false(this->_da,  n, val);
-                this->_size = n;
-                this->_capacity = n;
-            }
+            _size = n;
+            _capacity = n;
+
+            this->_da = _alloc.allocate(n);
+            construct_default(this->_da,  n, val);
         }
 
         vector (const vector& x){
@@ -138,17 +147,22 @@ namespace ft
                 this->_size = x._size;
                 this->_capacity = x._capacity;
                 this->_da = _alloc.allocate(this->_capacity);
-                construct_false(this->_da, this->_capacity, value_type());
+                construct_default(this->_da, this->_capacity);
                 std::memcpy(this->_da, x._da, this->_size * sizeof(value_type));
             }
         }
 
         vector& operator= (const vector& x){
-            if (this->_capacity <  x.size())
+            if (this->_capacity <  x.size()){
                 this->extand(x.capacity());
+                this->_capacity = x._capacity;
+            }
+            else{
+                this->destroy_all(this->_da, this->_size);
+                this->construct_default(this->_da, this->_size);
+            }
             this->_alloc = x._alloc;
             this->_size = x._size;
-            this->_capacity = x._capacity;
             std::memcpy(this->_da, x._da, this->_size * sizeof(value_type)); 
             return *this;
         }
@@ -156,7 +170,7 @@ namespace ft
         /*----------------------- DESTRUCTOR ------------------------*/
 
         ~vector(){
-            if (this->_da)
+            if (this->_da && this->_capacity)
             {
                 destroy_all(this->_da, this->_capacity);
                 _alloc.deallocate(this->_da, this->_capacity);
@@ -174,11 +188,11 @@ namespace ft
         }
 
         reverse_iterator rbegin(){ //returns reverse iterator to the reverse begining(end)
-            return reverse_iterator(this->_da + _size);
+            return reverse_iterator(this->end());
         }
 
         reverse_iterator rend(){ //returns reverse iterator to the reverse end(begining)
-            return reverse_iterator(this->_da);
+            return reverse_iterator(this->begin());
         }
 
         const_iterator cbegin() const{ //returns const iterator to the begining
@@ -189,11 +203,11 @@ namespace ft
             return const_iterator(this->_da + _size);
         }
         const_reverse_iterator crbegin() const{ //returns const reverse iterator to the reverse beginning (end)
-            return const_reverse_iterator(this->_da + _size);
+            return const_reverse_iterator(this->cend());
         }
 
         const_reverse_iterator crend(){ //returns const reverst iterator to the reverse end (beginning)
-            return const_reverse_iterator(this->_da);
+            return const_reverse_iterator(this->cbegin());
         }
 
         /*---------------------------- Modifiers ------------------------*/
@@ -209,8 +223,11 @@ namespace ft
 
             if (count > this->_capacity)
             {
-                this->destroy_all(this->_da, this->_capacity);
-                this->_alloc.deallocate(this->_da, this->_capacity);
+                if (this->_capacity != 0)
+                {
+                    this->destroy_all(this->_da, this->_capacity);
+                    this->_alloc.deallocate(this->_da, this->_capacity);
+                }
                 this->_da = this->_alloc.allocate(count);
                 this->_capacity = count;
             }
@@ -227,8 +244,11 @@ namespace ft
        // surpasses the current vector capacity.
             if (n > this->_capacity)
             {
-                this->destroy_all(this->_da, this->_capacity);
-                this->_alloc.deallocate(this->_da, this->_capacity);
+                if (this->_capacity != 0)
+                {
+                    this->destroy_all(this->_da, this->_capacity);
+                    this->_alloc.deallocate(this->_da, this->_capacity);
+                }
                 this->_da = this->_alloc.allocate(n);
                 this->_capacity = n;
             }
@@ -236,11 +256,17 @@ namespace ft
                 this->destroy_all(this->_da, this->_size);
 
             this->_size = n;
-            this->construct_false(this->_da, n, val);
+            this->construct_default(this->_da, n, val);
        }
 
         void push_back(const value_type& val){
-            if (this->_size >= this->_capacity)
+            if (this->_capacity == 0)
+            {
+                this->_da = _alloc.allocate(1);
+                _alloc.construct(this->_da, value_type());
+                this->_capacity++;
+            }
+            else if (this->_size >= this->_capacity)
                 this->extand(this->_capacity * 2);
             this->_da[_size++] = val;
         }
@@ -253,20 +279,21 @@ namespace ft
         iterator insert (iterator position, const value_type& val){
             if (position < this->begin())
                 return position;
-            else if (position == this->end())
-                    push_back(val);
             else{
                 size_type new_size = this->_size + 1;
                 int index = this->index_of_iterator(position);
 
                 if (new_size > this->_capacity){
-                    pointer tmp = this->_alloc.allocate(this->_capacity * 2);
-                    this->construct_false(tmp, this->_capacity * 2, value_type());
+                    pointer tmp = this->_alloc.allocate(new_size);
+                    this->construct_default(tmp,new_size);
                     std::memcpy(tmp, this->_da, index * sizeof(value_type));
                     tmp[index] = val;
                     std::memcpy(tmp + (index + 1), this->_da + index, (this->_size - index) * sizeof(value_type) );
+                if (this->_capacity != 0)
+                {
                     this->destroy_all(this->_da, this->_capacity);
                     this->_alloc.deallocate(this->_da, this->_capacity);
+                }
                     this->_da = tmp;
                     this->_size = new_size;
                     this->_capacity = this->_capacity * 2;
@@ -282,25 +309,25 @@ namespace ft
         void insert (iterator position, size_type n, const value_type& val){
             if (position < this->begin())
                 return ;
-            else if (position == this->end())
-                for(size_type i=0; i<n; i++)
-                    push_back(val);
             else{
                 size_type new_size = this->_size + n;
                 int index = this->index_of_iterator(position);
 
                 if (new_size > this->_capacity){
-                    pointer tmp = this->_alloc.allocate(this->_capacity * 2);
-                    this->construct_false(tmp, this->_capacity * 2, value_type());
+                    pointer tmp = this->_alloc.allocate(new_size);
+                    this->construct_default(tmp, new_size);
                     std::memcpy(tmp, this->_da, index * sizeof(value_type));
                     for(size_type i=index; i < index+n; i++)
                         tmp[i] = val;
                     std::memcpy(tmp + (index + n), this->_da + index, (this->_size - index) * sizeof(value_type) );
+                if (this->_capacity != 0)
+                {
                     this->destroy_all(this->_da, this->_capacity);
                     this->_alloc.deallocate(this->_da, this->_capacity);
+                }
                     this->_da = tmp;
                     this->_size = new_size;
-                    this->_capacity = this->_capacity * 2;
+                    this->_capacity = new_size;
                 }
                 else{
                     shift_n(n, index, val);
@@ -320,16 +347,13 @@ namespace ft
 
             if (position < this->begin())
                 return ;
-            else if (position == this->end())
-                for(InputIterator iter=first; iter!=last; iter++)
-                    push_back(*iter);
             else{
                 size_type new_size = this->_size + count;
                 int index = this->index_of_iterator(position);
 
                 if (new_size > this->_capacity){
-                    pointer tmp = this->_alloc.allocate(this->_capacity * 2);
-                    this->construct_false(tmp, this->_capacity * 2, value_type());
+                    pointer tmp = this->_alloc.allocate(new_size);
+                    this->construct_default(tmp, new_size);
                     std::memcpy(tmp, this->_da, index * sizeof(value_type));
 
                     size_type i = index;
@@ -340,11 +364,14 @@ namespace ft
                     }
 
                     std::memcpy(tmp + (index + count), this->_da + index, (this->_size - index) * sizeof(value_type) );
-                    this->destroy_all(this->_da, this->_capacity);
-                    this->_alloc.deallocate(this->_da, this->_capacity);
+                    if (this->_capacity != 0)
+                    {
+                        this->destroy_all(this->_da, this->_capacity);
+                        this->_alloc.deallocate(this->_da, this->_capacity);
+                    }
                     this->_da = tmp;
                     this->_size = new_size;
-                    this->_capacity = this->_capacity * 2;
+                    this->_capacity = new_size; //was cap * 2
                 }
                 else{
                     shift_n(count, index, value_type());
@@ -416,8 +443,8 @@ namespace ft
             return (this->_size);
         }
 
-        size_type max_size() const{ //return the maximum number of elements that the vector can store
-            return std::numeric_limits<value_type>::max() / sizeof(value_type);
+        size_type   max_size(void) const { //return the maximum number of elements that the vector can store
+            return allocator_type().max_size();
         }
 
         void resize (size_type n, value_type val = value_type()){ //changes the size of the vector to n (either by adding elements of destroying)
