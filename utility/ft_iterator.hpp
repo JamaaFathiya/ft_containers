@@ -76,6 +76,10 @@ public:
                 _ptr -= __n;
                 return *this;
         }
+        difference_type operator-(const iterator<T>& iter){
+            return this->_ptr - iter._ptr;
+        }
+
         reference    operator[](difference_type __n) const{
                 return _ptr[__n];
         }
@@ -190,6 +194,11 @@ public:
                 _ptr -= __n;
                 return *this;
         }
+
+        difference_type operator-(const const_iterator<T>& iter){
+            return this->_ptr - iter._ptr;
+        }
+
         reference    operator[](difference_type __n) const{
                 return _ptr[__n];
         }
