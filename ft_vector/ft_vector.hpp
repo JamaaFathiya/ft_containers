@@ -122,12 +122,9 @@ namespace ft
         vector (typename ft::enable_if< std::is_class<InputIterator>::value , InputIterator>::type first,
          InputIterator last, const allocator_type& alloc = allocator_type()): _alloc(alloc){
 
-             _size = 0;
+             _size = last - first;
              _capacity = 0;
 
-            for(InputIterator it = first; it != last; it++)
-                _size++;
-            
             this->_da = _alloc.allocate(_size);
             for(; first != last; first++)
                 this->_alloc.construct(this->_da + (_capacity++), *first);
@@ -214,12 +211,7 @@ namespace ft
 
         template <class InputIterator>  
         void assign (typename ft::enable_if< std::is_class<InputIterator>::value , InputIterator>::type first, InputIterator last){
-            InputIterator tmp;
-            tmp =  first;
-            size_type count = 0;;
-
-            for(; tmp != last; tmp++)
-                count++;
+            size_type count = last - first;
 
             if (count > this->_capacity)
             {
@@ -281,7 +273,7 @@ namespace ft
                 return position;
             else{
                 size_type new_size = this->_size + 1;
-                int index = this->index_of_iterator(position);
+                int index = this->end() - position - 1;
 
                 if (new_size > this->_capacity){
                     pointer tmp = this->_alloc.allocate(new_size);
@@ -311,7 +303,7 @@ namespace ft
                 return ;
             else{
                 size_type new_size = this->_size + n;
-                int index = this->index_of_iterator(position);
+                int index = this->end() - position - 1;
 
                 if (new_size > this->_capacity){
                     pointer tmp = this->_alloc.allocate(new_size);
@@ -341,16 +333,13 @@ namespace ft
                 else the elements are shifted count (the number of elments to insert) times and the range of iterators is inserted*/
         template <class InputIterator>
         void insert(iterator position, typename ft::enable_if< std::is_class<InputIterator>::value , InputIterator>::type first, InputIterator last){
-            size_type count = 0;
-            for(InputIterator iter=first; iter!=last; iter++)
-                count++;
+            int count = last - first;
 
             if (position < this->begin())
                 return ;
             else{
                 size_type new_size = this->_size + count;
-                int index = this->index_of_iterator(position);
-
+                int index = position - this->begin();
                 if (new_size > this->_capacity){
                     pointer tmp = this->_alloc.allocate(new_size);
                     this->construct_default(tmp, new_size);
@@ -398,11 +387,9 @@ namespace ft
         }
 
         iterator erase (iterator first, iterator last){
-            size_type count = 0;
-            size_type index = index_of_iterator(first);
+            size_type count = last - first;
+            size_type index = first - this->begin();
 
-            for(iterator iter = first; iter != last; iter++)
-                count++;
             unshift_n(count, index);
             this->_size -= count;
             return first;
