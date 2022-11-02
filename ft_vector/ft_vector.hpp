@@ -80,14 +80,6 @@ namespace ft
             }
         }
 
-        int index_of_iterator(iterator iter){
-            iterator tmp = this->begin();
-            int index = 0;
-            for (;tmp != iter ; tmp++)
-                index++;
-            return index;
-        }
-        
         /*---------------------------------------------------------------*/
 
     protected:
@@ -122,7 +114,7 @@ namespace ft
         vector (typename ft::enable_if< std::is_class<InputIterator>::value , InputIterator>::type first,
          InputIterator last, const allocator_type& alloc = allocator_type()): _alloc(alloc){
 
-             _size = last - first;
+             _size = last - first; //if first > last an exception is thrown by the allocator
              _capacity = 0;
 
             this->_da = _alloc.allocate(_size);
@@ -203,12 +195,13 @@ namespace ft
             return const_reverse_iterator(this->cend());
         }
 
-        const_reverse_iterator crend(){ //returns const reverst iterator to the reverse end (beginning)
+        const_reverse_iterator crend(){ //returns const reverse iterator to the reverse end (beginning)
             return const_reverse_iterator(this->cbegin());
         }
 
         /*---------------------------- Modifiers ------------------------*/
 
+        // erase edge cases: if last < first a length exception is thrown by the allocator.
         template <class InputIterator>  
         void assign (typename ft::enable_if< std::is_class<InputIterator>::value , InputIterator>::type first, InputIterator last){
             size_type count = last - first;
@@ -268,130 +261,141 @@ namespace ft
                 this->_alloc.destroy(_da +( --_size));
         }
 
+        //insert : insert one element in position , if the new_size is greater than the size a reallocation with capacity * 2 is done.
+        //edge cases: if position < begin()  => a construction is done in position and size = new_size  (not secure).
+        //            if position is out of the storage allocated a construction without allocation is done in position.
         iterator insert (iterator position, const value_type& val){
-            if (position < this->begin())
-                return position;
-            else{
-                size_type new_size = this->_size + 1;
-                int index = this->end() - position - 1;
+            size_type index =  position - this->begin();
 
-                if (new_size > this->_capacity){
-                    pointer tmp = this->_alloc.allocate(new_size);
-                    this->construct_default(tmp,new_size);
-                    std::memcpy(tmp, this->_da, index * sizeof(value_type));
-                    tmp[index] = val;
-                    std::memcpy(tmp + (index + 1), this->_da + index, (this->_size - index) * sizeof(value_type) );
-                if (this->_capacity != 0)
-                {
-                    this->destroy_all(this->_da, this->_capacity);
-                    this->_alloc.deallocate(this->_da, this->_capacity);
-                }
-                    this->_da = tmp;
-                    this->_size = new_size;
-                    this->_capacity = this->_capacity * 2;
-                }
-                else{
-                    shift_n(1, index, val);
+            if (position < this->begin() || index > this->capacity())
+                return position; //protection: if the position is out of the allocated storage
+
+            size_type new_size = this->_size + 1;
+            if (new_size > this->_capacity){
+                pointer tmp = this->_alloc.allocate(this->_capacity * 2);
+                this->construct_default(tmp, this->_capacity * 2);
+                std::memcpy(tmp, this->_da, index * sizeof(value_type));
+                tmp[index] = val;
+                std::memcpy(tmp + (index + 1), this->_da + index, (this->_size - index) * sizeof(value_type) );
+            if (this->_capacity != 0)
+            {
+                this->destroy_all(this->_da, this->_capacity);
+                this->_alloc.deallocate(this->_da, this->_capacity);
+            }
+                this->_da = tmp;
                 this->_size = new_size;
-                }
+                this->_capacity = this->_capacity * 2;
+            }
+            else{
+                shift_n(1, index, val);
+            this->_size = new_size;
             }
             return position;
         }
 
-        void insert (iterator position, size_type n, const value_type& val){
-            if (position < this->begin())
-                return ;
-            else{
-                size_type new_size = this->_size + n;
-                int index = this->end() - position - 1;
+        // insert n element of val int the position.
+        // if the new_size is greater than size a reallocation with new_size is done.
+        // edge cases: position < begin() construction of n element.
+        void insert (iterator position, size_type n, const value_type& val) {
+            size_type index = position - this->begin();
+            if (position < this->begin() || index >= this->_capacity)
+                return;
 
-                if (new_size > this->_capacity){
-                    pointer tmp = this->_alloc.allocate(new_size);
-                    this->construct_default(tmp, new_size);
-                    std::memcpy(tmp, this->_da, index * sizeof(value_type));
-                    for(size_type i=index; i < index+n; i++)
-                        tmp[i] = val;
-                    std::memcpy(tmp + (index + n), this->_da + index, (this->_size - index) * sizeof(value_type) );
-                if (this->_capacity != 0)
-                {
+            size_type new_size = this->_size + n;
+            if (new_size > this->_capacity) {
+                pointer tmp = this->_alloc.allocate(new_size);
+                this->construct_default(tmp, new_size);
+                std::memcpy(tmp, this->_da, index * sizeof(value_type));
+
+                for (size_type i = index; i < index + n; i++)
+                    tmp[i] = val;
+
+                std::memcpy(tmp + (index + n), this->_da + index, (this->_size - index) * sizeof(value_type));
+                if (this->_capacity != 0) {
                     this->destroy_all(this->_da, this->_capacity);
                     this->_alloc.deallocate(this->_da, this->_capacity);
                 }
-                    this->_da = tmp;
-                    this->_size = new_size;
-                    this->_capacity = new_size;
-                }
-                else{
-                    shift_n(n, index, val);
-                    this->_size = new_size;
-                }
+                this->_da = tmp;
+                this->_size = new_size;
+                this->_capacity = new_size;
+            } else {
+                shift_n(n, index, val);
+                this->_size = new_size;
             }
         }
         /* insert function iserts a range of iterators in a position 
         @desc: if the position is the end we iterate and push the elements
                 if the new_size is biger than the capacity a reallocation is done
                 else the elements are shifted count (the number of elments to insert) times and the range of iterators is inserted*/
+        //edge cases: if last < first: an exception is thrown.
         template <class InputIterator>
         void insert(iterator position, typename ft::enable_if< std::is_class<InputIterator>::value , InputIterator>::type first, InputIterator last){
+            size_type index = position - this->begin();
             int count = last - first;
 
-            if (position < this->begin())
+            if (position < this->begin() || index >= this->capacity())
                 return ;
-            else{
-                size_type new_size = this->_size + count;
-                int index = position - this->begin();
-                if (new_size > this->_capacity){
-                    pointer tmp = this->_alloc.allocate(new_size);
-                    this->construct_default(tmp, new_size);
-                    std::memcpy(tmp, this->_da, index * sizeof(value_type));
 
-                    size_type i = index;
-                    InputIterator iter = first;
-                    while(iter!=last){
-                        tmp[i++] = *iter;
-                        iter++; 
-                    }
+            size_type new_size = this->_size + count;
+            if (new_size > this->_capacity){
+                pointer tmp = this->_alloc.allocate(new_size);
+                this->construct_default(tmp, new_size);
+                std::memcpy(tmp, this->_da, index * sizeof(value_type));
 
-                    std::memcpy(tmp + (index + count), this->_da + index, (this->_size - index) * sizeof(value_type) );
-                    if (this->_capacity != 0)
-                    {
-                        this->destroy_all(this->_da, this->_capacity);
-                        this->_alloc.deallocate(this->_da, this->_capacity);
-                    }
-                    this->_da = tmp;
-                    this->_size = new_size;
-                    this->_capacity = new_size; //was cap * 2
+                size_type i = index;
+                InputIterator iter = first;
+                while(iter!=last){
+                    tmp[i++] = *iter;
+                    iter++;
                 }
-                else{
+
+                std::memcpy(tmp + (index + count), this->_da + index, (this->_size - index) * sizeof(value_type) );
+                if (this->_capacity != 0)
+                {
+                    this->destroy_all(this->_da, this->_capacity);
+                    this->_alloc.deallocate(this->_da, this->_capacity);
+                }
+                this->_da = tmp;
+                this->_size = new_size;
+                this->_capacity = new_size;
+            }
+            else{
+                if (first < last) {
                     shift_n(count, index, value_type());
                     size_type i = index;
                     InputIterator iter = first;
-                    while(iter!=last){
-                        this->_da[i++] = *iter;                   
+                    while (iter != last) {
+                        this->_da[i++] = *iter;
                         iter++;
                     }
                     this->_size = new_size;
                 }
             }
+
         }
 
+        //edge cases: if position is out of range => segfault.
         iterator erase (iterator position){
+            if (position < this->begin())
+                return erase(this->begin());// in case of erasing before the beginning
             if (position >= this->begin() && position < this->end())
             {
-                size_type index = index_of_iterator(position);
+                size_type index = position - this->begin() ;
                 unshift_n(1, index);
                 this->_size--;
-
             }
             return position;
         }
 
+        //edge cases: if last < first => endless loop.
         iterator erase (iterator first, iterator last){
             size_type count = last - first;
             size_type index = first - this->begin();
 
-            unshift_n(count, index);
-            this->_size -= count;
+            if (first < last){
+                unshift_n(count, index);
+                this->_size -= count;
+            }
             return first;
         }
 
