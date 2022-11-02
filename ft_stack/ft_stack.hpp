@@ -11,11 +11,11 @@ template<
 > class stack{
 
     public:
-        typedef T value_type;
-        typedef Container container_type;
-        typedef typename container_type::size_type size_type;
-        typedef typename container_type::reference reference;
-        typedef typename container_type::const_reference const_reference;
+        typedef T                                           value_type;
+        typedef Container                                   container_type;
+        typedef typename container_type::size_type          size_type;
+        typedef typename container_type::reference          reference;
+        typedef typename container_type::const_reference    const_reference;
 
     protected:
         container_type _c;
@@ -33,11 +33,11 @@ template<
             return this->_c.size();
         }
 
-        value_type& top(){
+        reference top(){
             return this->_c.back();
          }
 
-        const value_type& top() const{
+        const_reference top() const{
             return this->_c.back();
         }
 
