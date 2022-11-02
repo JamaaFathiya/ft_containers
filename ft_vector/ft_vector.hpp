@@ -98,7 +98,7 @@ namespace ft
         }
 
 
-        
+
         // SFINAE subtitution failure it's not an error:
         /* when we call a constructor with two parameters with the same type the compiler choose the third constructor
         because it muchs perfectely the paramters(beeing the same type) but the subtitution of the parameters fails (which is not an erro)
@@ -106,7 +106,7 @@ namespace ft
         the compiler would have to perform a type conversion. The second constructor would fit perfectly though.)
 
         ENABLE_IF:
-        enabel_if(condition, type) if the condition is true
+        enable_if(condition, type) if the condition is true
         the specialization of struct enable_if for true is used, and the internal type is set to Inputiterator, if the cond is false the 
          general form of enable if is selected, and it doesn't have a type, so the type of the argument results in a subsitutuion failure.
         */
