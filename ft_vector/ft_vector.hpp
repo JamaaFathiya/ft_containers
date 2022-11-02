@@ -22,7 +22,7 @@ namespace ft
         typedef typename allocator_type::size_type              size_type;
         typedef typename allocator_type::pointer                pointer;
         typedef typename ft::iterator<T>::difference_type       difference;
-        typedef typename ft::iterator<T> iterator;
+        typedef typename ft::iterator<T>                        iterator;
         typedef typename ft::const_iterator<T>                  const_iterator;
         typedef typename ft::reverse_iterator<iterator>         reverse_iterator;
         typedef typename ft::reverse_iterator<const_iterator>   const_reverse_iterator;
@@ -76,8 +76,10 @@ namespace ft
 
         void unshift_n(size_type n, int pos){
             for(size_type i = pos, j = 0; i < this->_size; i++, j++){
-                if (j < n)
+                if (j < n){
                     this->_alloc.destroy(this->_da + i);
+                    this->_alloc.construct(this->_da + i , value_type());
+                }
                 this->_da[i] = this->_da[i + n];
             }
         }
