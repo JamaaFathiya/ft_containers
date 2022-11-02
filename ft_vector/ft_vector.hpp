@@ -15,23 +15,24 @@ namespace ft
     {
 
     public:
-        typedef T  value_type;
-        typedef Allocator allocator_type;
-        typedef typename allocator_type::reference reference;
-        typedef typename allocator_type::const_reference const_reference;
-        typedef typename allocator_type::size_type       size_type;
-        typedef typename allocator_type::pointer         pointer;
-        typedef typename ft::iterator<T>::difference_type difference;
+        typedef T                                               value_type;
+        typedef Allocator                                       allocator_type;
+        typedef typename allocator_type::reference              reference;
+        typedef typename allocator_type::const_reference        const_reference;
+        typedef typename allocator_type::size_type              size_type;
+        typedef typename allocator_type::pointer                pointer;
+        typedef typename ft::iterator<T>::difference_type       difference;
         typedef typename ft::iterator<T> iterator;
-        typedef typename ft::const_iterator<T> const_iterator;
-        typedef typename ft::reverse_iterator<iterator> reverse_iterator;
-        typedef typename ft::reverse_iterator<const_iterator> const_reverse_iterator;
+        typedef typename ft::const_iterator<T>                  const_iterator;
+        typedef typename ft::reverse_iterator<iterator>         reverse_iterator;
+        typedef typename ft::reverse_iterator<const_iterator>   const_reverse_iterator;
 
     private: 
-        T* _da;
-        size_type _size;
-        size_type _capacity;
-        allocator_type _alloc;
+        T*              _da;
+        size_type       _size;
+        size_type       _capacity;
+        allocator_type  _alloc;
+
 
         /*-----------------------------------------------------------------*/
         /*---------------------------Utilitis------------------------------*/
@@ -42,6 +43,7 @@ namespace ft
                     _alloc.construct(&dest[i], &src[i]);
             }
         }
+
         void construct_default(pointer dest, size_type n, const value_type& val = value_type()){
                 for(size_type i=0; i<n ; i++)
                     _alloc.construct(&dest[i], val);
@@ -96,7 +98,6 @@ namespace ft
                 this->_capacity = 0;
                 this->_da = nullptr;
         }
-
 
 
         // SFINAE subtitution failure it's not an error:
@@ -201,7 +202,7 @@ namespace ft
 
         /*---------------------------- Modifiers ------------------------*/
 
-        // erase edge cases: if last < first a length exception is thrown by the allocator.
+        // assign edge cases: if last < first a length exception is thrown by the allocator.
         template <class InputIterator>  
         void assign (typename ft::enable_if< std::is_class<InputIterator>::value , InputIterator>::type first, InputIterator last){
             size_type count = last - first;
@@ -224,9 +225,10 @@ namespace ft
                 push_back(*first);
          }
 
-        void assign (size_type n, const value_type& val){//any element held int the container before the call are destroyed
-       // This causes an automatic reallocation of the allocated storage space if -and only if- the new vector size
-       // surpasses the current vector capacity.
+        //any element held int the container before the call are destroyed
+        // This causes an automatic reallocation of the allocated storage space if -and only if- the new vector size
+        // surpasses the current vector capacity.
+        void assign (size_type n, const value_type& val){
             if (n > this->_capacity)
             {
                 if (this->_capacity != 0)
@@ -274,21 +276,22 @@ namespace ft
             if (new_size > this->_capacity){
                 pointer tmp = this->_alloc.allocate(this->_capacity * 2);
                 this->construct_default(tmp, this->_capacity * 2);
+
                 std::memcpy(tmp, this->_da, index * sizeof(value_type));
                 tmp[index] = val;
-                std::memcpy(tmp + (index + 1), this->_da + index, (this->_size - index) * sizeof(value_type) );
-            if (this->_capacity != 0)
-            {
-                this->destroy_all(this->_da, this->_capacity);
-                this->_alloc.deallocate(this->_da, this->_capacity);
-            }
-                this->_da = tmp;
-                this->_size = new_size;
-                this->_capacity = this->_capacity * 2;
-            }
-            else{
+                std::memcpy(tmp + (index + 1), this->_da + index, (this->_size - index) * sizeof(value_type));
+
+                if (this->_capacity != 0)
+                {
+                    this->destroy_all(this->_da, this->_capacity);
+                    this->_alloc.deallocate(this->_da, this->_capacity);
+                }
+                    this->_da = tmp;
+                    this->_size = new_size;
+                    this->_capacity = this->_capacity * 2;
+            } else {
                 shift_n(1, index, val);
-            this->_size = new_size;
+                this->_size = new_size;
             }
             return position;
         }
@@ -374,7 +377,8 @@ namespace ft
 
         }
 
-        //edge cases: if position is out of range => segfault.
+        //edge cases: if position is >= end() => segfault
+        //            if position is < begin() => erase begin().
         iterator erase (iterator position){
             if (position < this->begin())
                 return erase(this->begin());// in case of erasing before the beginning
