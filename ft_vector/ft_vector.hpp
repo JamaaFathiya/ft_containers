@@ -146,17 +146,19 @@ namespace ft
         }
 
         vector& operator= (const vector& x){
-            if (this->_capacity <  x.size()){
-                this->extand(x.capacity());
-                this->_capacity = x._capacity;
+            if (this != &x){
+                if (this->_capacity <  x.size()){
+                    this->extand(x.capacity());
+                    this->_capacity = x._capacity;
+                }
+                else{
+                    this->destroy_all(this->_da, this->_size);
+                    this->construct_default(this->_da, this->_size);
+                }
+                this->_alloc = x._alloc;
+                this->_size = x._size;
+                std::memcpy(this->_da, x._da, this->_size * sizeof(value_type));
             }
-            else{
-                this->destroy_all(this->_da, this->_size);
-                this->construct_default(this->_da, this->_size);
-            }
-            this->_alloc = x._alloc;
-            this->_size = x._size;
-            std::memcpy(this->_da, x._da, this->_size * sizeof(value_type)); 
             return *this;
         }
 
@@ -275,14 +277,15 @@ namespace ft
             if (position < this->begin() || index > this->capacity())
                 return position; //protection: if the position is out of the allocated storage
 
-            size_type new_size = this->_size + 1;
+            size_type new_size = (position > this->end()) ? this->_size + 1 + (position - this->end()) : this->_size + 1;
             if (new_size > this->_capacity){
                 pointer tmp = this->_alloc.allocate(this->_capacity * 2);
                 this->construct_default(tmp, this->_capacity * 2);
 
                 std::memcpy(tmp, this->_da, index * sizeof(value_type));
                 tmp[index] = val;
-                std::memcpy(tmp + (index + 1), this->_da + index, (this->_size - index) * sizeof(value_type));
+                if (index < this->_size)
+                    std::memcpy(tmp + (index + 1), this->_da + index, (this->_size - index) * sizeof(value_type));
 
                 if (this->_capacity != 0)
                 {
@@ -300,18 +303,27 @@ namespace ft
         }
 
         // insert n element of val int the position.
-        // if the new_size is greater than size a reallocation with new_size is done.
+        // if the new_size is greater than size a reallocation with capacity * 2 is done.
         // edge cases: position < begin() construction of n element.
         //              if position is greater than the end => segfault or allocation error;
         void insert (iterator position, size_type n, const value_type& val) {
             size_type index = position - this->begin();
-            if (position < this->begin() || index >= this->_capacity)
+            if (position < this->begin() || position > this->end())
                 return;
+
+            if (position == this->end()){
+                for(size_type i = 0; i < n ; i++)
+                    push_back(val);
+                return;
+            }
+
             //new_size is the old size + number of element but jif the position surpasses the end() the cases skipped are add to count
-            size_type new_size =  (position > this->end()) ? this->_size + n + (position - this->end()) : this->_size + n;
+            size_type new_size =  this->_size + n;
+            size_type new_capacity = (this->_capacity * 2) < new_size ? new_size : this->_capacity * 2; //the new capacity varies between the new size if it's greater than the old cap * 2
+                                                                                                        // and vice versa
             if (new_size > this->_capacity) {
-                pointer tmp = this->_alloc.allocate(new_size);
-                this->construct_default(tmp, new_size);
+                pointer tmp = this->_alloc.allocate(new_capacity);
+                this->construct_default(tmp, new_capacity);
                 std::memcpy(tmp, this->_da, index * sizeof(value_type));
 
                 for (size_type i = index; i < index + n; i++)
@@ -326,7 +338,7 @@ namespace ft
                 }
                 this->_da = tmp;
                 this->_size = new_size;
-                this->_capacity = new_size;
+                this->_capacity = new_capacity;
             } else {
                 shift_n(n, index, val);
                 this->_size = new_size;
@@ -347,9 +359,11 @@ namespace ft
                 return ;
             //new_size is the old size + number of element but jif the position surpasses the end() the cases skipped are add to count
             size_type new_size =  (position > this->end()) ? this->_size + count + (position - this->end()) : this->_size + count;
+            size_type new_capacity = (this->_capacity * 2) < new_size ? new_size : this->_capacity * 2; //the new capacity varies between the new size if it's greater than the old cap * 2
+                                                                                                        // and vice versa
             if (new_size > this->_capacity){
-                pointer tmp = this->_alloc.allocate(new_size);
-                this->construct_default(tmp, new_size);
+                pointer tmp = this->_alloc.allocate(new_capacity);
+                this->construct_default(tmp, new_capacity);
                 std::memcpy(tmp, this->_da, index * sizeof(value_type));
 
                 size_type i = index;
@@ -368,7 +382,7 @@ namespace ft
                 }
                 this->_da = tmp;
                 this->_size = new_size;
-                this->_capacity = new_size;
+                this->_capacity = new_capacity;
             }
             else{
                 if (first < last) {
