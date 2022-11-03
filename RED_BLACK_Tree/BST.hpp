@@ -2,6 +2,8 @@
 #include <iostream>
 #include <functional>
 #include <memory>
+#include <__tree>
+#include <map>
 
 namespace ft
 {
@@ -23,7 +25,6 @@ namespace ft
 
     public:
         typedef T           value_type;
-        typedef Compare     cmp;
         typedef size_t      size_type;
 
 
@@ -39,12 +40,14 @@ namespace ft
         typedef std::allocator<_node>   alloc_type;
 
         typedef _node* node_ptr;
+        typedef Compare compare_func;
 
     public:
-        alloc_type  _alloc;
-        node_ptr    _root;
-        node_ptr    _tnull;
-        size_type   _size;
+        alloc_type      _alloc;
+        compare_func    _cmp;
+        node_ptr        _root;
+        node_ptr        _tnull;
+        size_type       _size;
 
 
     public:
@@ -61,9 +64,9 @@ namespace ft
         }
 
 
-        node_ptr new_node(node_ptr node, value_type data = value_type())
+        node_ptr new_node(value_type data = value_type())
         {
-            node = _alloc.allocate(1);
+            node_ptr node = _alloc.allocate(1);
             _alloc.construct(node, _node());
             node->_data = data;
             node->_parent = _tnull;
@@ -74,55 +77,75 @@ namespace ft
             return node;
         }
 
-        void insert(value_type data, node_ptr& node){
-            if (node == _tnull){ //if the tree is empty
-                node = new_node(node, data);
+//        void insert(value_type data, node_ptr& node){
+//            if (node == _tnull){ //if the tree is empty
+//                node = new_node(node, data);
+//            }
+//            else if(_cmp(node->_data, data)) {
+//                insert(data, node->_right_c);
+//                node->_right_c->_parent = node;
+//            }
+//            else if(_cmp(data, node->_data)){
+//                insert(data, node->_left_c);
+//                node->_left_c->_parent = node;
+//            }
+//        }
+        void insert(value_type data) {
+            node_ptr tmp = this->_root;
+            node_ptr insert_in = _tnull;
+
+            while (tmp != _tnull){
+                insert_in = tmp;
+                if (_cmp(data, tmp->_data))
+                    tmp = tmp->_left_c;
+                else if (_cmp(tmp->_data, data))
+                    tmp = tmp->_right_c;
+                else
+                    return;
             }
-            else if(data > node->_data) {
-                insert(data, node->_right_c);
-                node->_right_c->_parent = node;
-            }
-            else if(data < node->_data){
-                insert(data, node->_left_c);
-                node->_left_c->_parent = node;
-            }
+
+            tmp = new_node(data);
+            tmp->_parent = insert_in;
+            if (insert_in == _tnull)
+                this->_root = tmp;
+            else if (_cmp(data,insert_in->_data))
+                insert_in->_left_c = tmp;
+            else
+                insert_in->_right_c = tmp;
+
+            this->_size++;
         }
 
-        void delete_elem(value_type data, node_ptr& root){
-            node_ptr found = search(data, root);
-            node_ptr node_to_delete = root;
+        void delete_elem(value_type data) {
+            node_ptr found = search(data, this->_root);
+            node_ptr node_to_delete = found;
             if (found)
             {
-                root = found;
-                if (is_leaf(root)){
-                    (child_position(root->_parent, root) == LEFT ? root->_parent->_left_c = _tnull : root->_parent->_right_c = _tnull);
+                if (is_leaf(found)){
+                    (child_position(found->_parent, found) == LEFT ? found->_parent->_left_c = _tnull : found->_parent->_right_c = _tnull);
+                } else if (found->_right_c != _tnull && found->_left_c != _tnull){
+                    node_ptr tmp = maximum(found->_left_c);
+                    found->_data = tmp->_data;
+                 //if the maximum have a chile it's certain that it's a left_child
+                    tmp->_parent->_right_c = tmp->_left_c;
+                    tmp->_left_c->_parent = (tmp->_left_c != _tnull) ? tmp->_parent : nullptr;
 
-                } else if (root->_right_c != _tnull && root->_left_c != _tnull){
-                    node_ptr tmp = successor(root->_left_c);
-                    root->_data = tmp->_data;
-                    if (!is_leaf(tmp))
-                    {
-                        tmp->_parent->_right_c = tmp->_left_c;
-                        tmp->_left_c->_parent = tmp->_parent;
-                    }
-                    else
-                        tmp->_parent->_right_c = _tnull;
                     node_to_delete = tmp;
                 } else{
-                    node_ptr tmp = root;
-                    node_ptr root_child = (root->_left_c ? root->_left_c : root->_right_c);
-                    root_child->_parent = root->_parent;
-                    root = root_child;
+                    node_ptr tmp = found;
+                    node_ptr root_child = (found->_left_c ? found->_left_c : found->_right_c);
+                    root_child->_parent = found->_parent;
+                    found = root_child;
                     node_to_delete = tmp;
 
                 }
                 _alloc.destroy(node_to_delete);
                 _alloc.deallocate(node_to_delete, 1);
+                this->_size--;
             }
         }
 
-        _child child_position(node_ptr parent, node_ptr child)
-        {
+        _child child_position(node_ptr parent, node_ptr child) {
             if (!parent || !child || parent == _tnull || child == _tnull)
                 return NONE;
             if (parent->_left_c == child)
@@ -132,11 +155,11 @@ namespace ft
             return NONE;
         }
 
-        bool is_leaf(node_ptr node){
+        bool is_leaf(node_ptr node) {
             return (node->_right_c == _tnull) && (node->_left_c == _tnull);
         }
 
-        node_ptr search(value_type data, node_ptr root){
+        node_ptr search(value_type data, node_ptr root) {
             while (root && root != _tnull){
                 if (root->_data == data)
                     return  root;
@@ -149,8 +172,7 @@ namespace ft
             return nullptr;
         }
 
-
-            void inorder_traverse(node_ptr root){
+        void inorder_traverse(node_ptr root) {
             if(root != nullptr && root != _tnull){
                 inorder_traverse(root->_left_c);
                 std::cout << "data: "<< root->_data << std::endl;
@@ -161,7 +183,7 @@ namespace ft
             }
         }
 
-        void clear(node_ptr& root){
+        void clear(node_ptr& root) {
             if (root == _tnull)
                 return;
             clear(root->_right_c);
@@ -171,23 +193,62 @@ namespace ft
             root  = nullptr;
         }
 
-        void clear_tree(node_ptr& root){
+        void clear_tree(node_ptr& root) {
             clear(root);
             _alloc.destroy(_tnull);
             _alloc.deallocate(_tnull, 1);
             _tnull = nullptr;
         }
 
-        node_ptr successor(node_ptr node){
+        node_ptr maximum(node_ptr node) { //max
             while (node && node != _tnull && node->_right_c != _tnull)
                 node = node->_right_c;
             return  node;
         }
 
-        node_ptr predeccessor(node_ptr node){
+        node_ptr successor(node_ptr node) {
+            if (node->_right_c != _tnull)
+                return minimum(node->_right_c);
+            else{
+                node_ptr p = node->_parent;
+                while (p != _tnull && node == p->_right_c){// searching until the node is a left child or the parent is tnull
+                    node = p;
+                    p = p->_parent;
+                }
+                return p;
+            }
+        }
+
+        node_ptr minimum(node_ptr node) {//min
             while (node && node != _tnull && node->_left_c != _tnull)
                 node = node->_left_c;
             return  node;
+        }
+
+        node_ptr predecessor(node_ptr node) {
+            if (node->_left_c != _tnull)
+                return maximum(node->_left_c);
+            else{
+                node_ptr p = node->_parent;
+                while (p != _tnull && node == p->_left_c){
+                    node = p;
+                    p = p->_parent;
+                }
+                return p;
+            }
+        }
+
+        node_ptr grand_parent(node_ptr node) {
+            if (node && node->_parent && node->_parent->_parent)
+                return node->_parent->_parent;
+            return _tnull;
+        }
+
+        node_ptr node_uncle(node_ptr node) {
+            node_ptr grand_pa = grand_parent(node);
+            if (grand_pa != _tnull)
+                return (child_position(grand_pa, node->_parent) == LEFT ? grand_pa->_right_c : grand_pa->_left_c );
+            return _tnull;
         }
 
         void print2DUtil(node_ptr root, int space)
