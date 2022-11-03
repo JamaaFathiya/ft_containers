@@ -68,10 +68,11 @@ namespace ft
         }
 
         void shift_n(size_type n, int pos, const value_type& val){
-            for(int i = this->_size - 1; i >= pos; i--){
+            for(int i = this->_size - 1; i >= pos; i--)
                 this->_da[i + n] = this->_da[i];
-                this->_da[i] = val;
-            }
+            for(size_type i = 0; i < n; i++)
+                this->_da[pos + i] = val;
+
         }
 
         void unshift_n(size_type n, int pos){
@@ -301,12 +302,13 @@ namespace ft
         // insert n element of val int the position.
         // if the new_size is greater than size a reallocation with new_size is done.
         // edge cases: position < begin() construction of n element.
+        //              if position is greater than the end => segfault or allocation error;
         void insert (iterator position, size_type n, const value_type& val) {
             size_type index = position - this->begin();
             if (position < this->begin() || index >= this->_capacity)
                 return;
-
-            size_type new_size = this->_size + n;
+            //new_size is the old size + number of element but jif the position surpasses the end() the cases skipped are add to count
+            size_type new_size =  (position > this->end()) ? this->_size + n + (position - this->end()) : this->_size + n;
             if (new_size > this->_capacity) {
                 pointer tmp = this->_alloc.allocate(new_size);
                 this->construct_default(tmp, new_size);
@@ -315,7 +317,9 @@ namespace ft
                 for (size_type i = index; i < index + n; i++)
                     tmp[i] = val;
 
-                std::memcpy(tmp + (index + n), this->_da + index, (this->_size - index) * sizeof(value_type));
+                if (index < this->_size) //protection
+                    std::memcpy(tmp + (index + n), this->_da + index, (this->_size - index) * sizeof(value_type));
+
                 if (this->_capacity != 0) {
                     this->destroy_all(this->_da, this->_capacity);
                     this->_alloc.deallocate(this->_da, this->_capacity);
@@ -328,6 +332,7 @@ namespace ft
                 this->_size = new_size;
             }
         }
+
         /* insert function iserts a range of iterators in a position 
         @desc: if the position is the end we iterate and push the elements
                 if the new_size is biger than the capacity a reallocation is done
@@ -340,8 +345,8 @@ namespace ft
 
             if (position < this->begin() || index >= this->capacity())
                 return ;
-
-            size_type new_size = this->_size + count;
+            //new_size is the old size + number of element but jif the position surpasses the end() the cases skipped are add to count
+            size_type new_size =  (position > this->end()) ? this->_size + count + (position - this->end()) : this->_size + count;
             if (new_size > this->_capacity){
                 pointer tmp = this->_alloc.allocate(new_size);
                 this->construct_default(tmp, new_size);
@@ -354,7 +359,8 @@ namespace ft
                     iter++;
                 }
 
-                std::memcpy(tmp + (index + count), this->_da + index, (this->_size - index) * sizeof(value_type) );
+                if (index < this->_size)
+                    std::memcpy(tmp + (index + count), this->_da + index, (this->_size - index) * sizeof(value_type) );
                 if (this->_capacity != 0)
                 {
                     this->destroy_all(this->_da, this->_capacity);
