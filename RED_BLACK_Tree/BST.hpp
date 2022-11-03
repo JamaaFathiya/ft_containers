@@ -15,6 +15,7 @@ namespace ft
         RIGHT,
         NONE
     };
+#define COUNT 10
 
     template<typename T, class Compare = std::less<T> >
     class BST
@@ -25,6 +26,7 @@ namespace ft
         typedef Compare     cmp;
         typedef size_t      size_type;
 
+
         struct _node
         {
             value_type _data;
@@ -33,13 +35,14 @@ namespace ft
             _node* _right_c;
             color _color;
         };
+
         typedef std::allocator<_node>   alloc_type;
 
         typedef _node* node_ptr;
 
     public:
         alloc_type  _alloc;
-        node_ptr    _tree;
+        node_ptr    _root;
         node_ptr    _tnull;
         size_type   _size;
 
@@ -54,7 +57,7 @@ namespace ft
             this->_tnull->_parent = nullptr;
             this->_tnull->_color = BLACK;
 
-            this->_tree = this->_tnull;
+            this->_root = this->_tnull;
         }
 
 
@@ -86,16 +89,14 @@ namespace ft
         }
 
         void delete_elem(value_type data, node_ptr& root){
-            if (root == _tnull || root == nullptr)
-                return;
-            if(data < root->_data)
-                delete_elem(data, root->_left_c);
-            else if (data > root->_data)
-                delete_elem(data, root->_right_c);
-            else{
+            node_ptr found = search(data, root);
+            node_ptr node_to_delete = root;
+            if (found)
+            {
+                root = found;
                 if (is_leaf(root)){
                     (child_position(root->_parent, root) == LEFT ? root->_parent->_left_c = _tnull : root->_parent->_right_c = _tnull);
-                    _alloc.destroy(root);
+
                 } else if (root->_right_c != _tnull && root->_left_c != _tnull){
                     node_ptr tmp = successor(root->_left_c);
                     root->_data = tmp->_data;
@@ -106,16 +107,17 @@ namespace ft
                     }
                     else
                         tmp->_parent->_right_c = _tnull;
-                    _alloc.destroy(tmp);
-                    _alloc.deallocate(tmp, 1);
+                    node_to_delete = tmp;
                 } else{
                     node_ptr tmp = root;
                     node_ptr root_child = (root->_left_c ? root->_left_c : root->_right_c);
                     root_child->_parent = root->_parent;
                     root = root_child;
-                    _alloc.destroy(tmp);
-                    _alloc.deallocate(tmp, 1);
+                    node_to_delete = tmp;
+
                 }
+                _alloc.destroy(node_to_delete);
+                _alloc.deallocate(node_to_delete, 1);
             }
         }
 
@@ -135,19 +137,20 @@ namespace ft
         }
 
         node_ptr search(value_type data, node_ptr root){
-            if (root != _tnull){
+            while (root && root != _tnull){
                 if (root->_data == data)
-                    return root;
-                else if(data > root->_data)
-                    return search(data, root->_right_c);
-                else if(data < root->_data)
-                    return search(data, root->_left_c);
+                    return  root;
+                if (data > root->_data)
+                    root = root->_right_c;
+                else
+                    root = root->_left_c;
             }
-            return root;
+//            throw std::exception();
+            return nullptr;
         }
 
 
-        void inorder_traverse(node_ptr root){
+            void inorder_traverse(node_ptr root){
             if(root != nullptr && root != _tnull){
                 inorder_traverse(root->_left_c);
                 std::cout << "data: "<< root->_data << std::endl;
@@ -187,5 +190,34 @@ namespace ft
             return  node;
         }
 
+        void print2DUtil(node_ptr root, int space)
+        {
+            // Base case
+            if (root == NULL)
+                return;
+
+            // Increase distance between levels
+            space += COUNT;
+
+            // Process right child first
+            print2DUtil(root->_right_c, space);
+
+            // Print current node after space
+            // count
+            std::cout << std::endl;
+            for (int i = COUNT; i < space; i++)
+                std::cout << " ";
+            std::cout << root->_data << "\n";
+
+            // Process left child
+            print2DUtil(root->_left_c, space);
+        }
+
+// Wrapper over print2DUtil()
+        void print2D(node_ptr root)
+        {
+            // Pass initial space count as 0
+            print2DUtil(root, 0);
+        }
     };
 };
