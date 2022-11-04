@@ -17,9 +17,10 @@ namespace ft
         RIGHT,
         NONE
     };
+
 #define COUNT 10
 
-    template<typename T, class Compare = std::less<T> >
+    template<typename T, class Compare = std::less<T> , class Allocator = std::allocator<T> >
     class BST
     {
 
@@ -30,19 +31,20 @@ namespace ft
 
         struct _node
         {
-            value_type _data;
-            _node* _parent;
-            _node* _left_c;
-            _node* _right_c;
-            color _color;
+            value_type  _data;
+            _node*      _parent;
+            _node*      _left_c;
+            _node*      _right_c;
+            color       _color;
         };
 
         typedef std::allocator<_node>   alloc_type;
 
         typedef _node* node_ptr;
+        typedef _node& node_reference;
         typedef Compare compare_func;
 
-    public:
+    protected:
         alloc_type      _alloc;
         compare_func    _cmp;
         node_ptr        _root;
@@ -63,7 +65,9 @@ namespace ft
             this->_root = this->_tnull;
         }
 
+        ~BST(){
 
+        }
         node_ptr new_node(value_type data = value_type())
         {
             node_ptr node = _alloc.allocate(1);
@@ -90,7 +94,7 @@ namespace ft
 //                node->_left_c->_parent = node;
 //            }
 //        }
-        void insert(value_type data) {
+        node_ptr insert(value_type data) {
             node_ptr tmp = this->_root;
             node_ptr insert_in = _tnull;
 
@@ -101,7 +105,7 @@ namespace ft
                 else if (_cmp(tmp->_data, data))
                     tmp = tmp->_right_c;
                 else
-                    return;
+                    return nullptr;
             }
 
             tmp = new_node(data);
@@ -114,10 +118,11 @@ namespace ft
                 insert_in->_right_c = tmp;
 
             this->_size++;
+            return tmp;
         }
 
         void delete_elem(value_type data) {
-            node_ptr found = search(data, this->_root);
+            node_ptr found = search(data);
             node_ptr node_to_delete = found;
             if (found)
             {
@@ -126,8 +131,11 @@ namespace ft
                 } else if (found->_right_c != _tnull && found->_left_c != _tnull){
                     node_ptr tmp = maximum(found->_left_c);
                     found->_data = tmp->_data;
+                    if (child_position(tmp->_parent, tmp) == RIGHT)
                  //if the maximum have a chile it's certain that it's a left_child
                     tmp->_parent->_right_c = tmp->_left_c;
+                    else
+                        tmp->_parent->_left_c = tmp->_left_c;
                     tmp->_left_c->_parent = (tmp->_left_c != _tnull) ? tmp->_parent : nullptr;
 
                     node_to_delete = tmp;
@@ -159,7 +167,9 @@ namespace ft
             return (node->_right_c == _tnull) && (node->_left_c == _tnull);
         }
 
-        node_ptr search(value_type data, node_ptr root) {
+        node_ptr search(value_type data) {
+
+            node_ptr root = this->_root;
             while (root && root != _tnull){
                 if (root->_data == data)
                     return  root;
@@ -193,8 +203,8 @@ namespace ft
             root  = nullptr;
         }
 
-        void clear_tree(node_ptr& root) {
-            clear(root);
+        void clear_tree() {
+            clear(this->_root);
             _alloc.destroy(_tnull);
             _alloc.deallocate(_tnull, 1);
             _tnull = nullptr;
@@ -251,6 +261,17 @@ namespace ft
             return _tnull;
         }
 
+        size_type size() const{
+            return  this->_size;
+        }
+
+        node_ptr root() {
+            return this->_root;
+        }
+
+        node_ptr &root_ref() {
+            return this->_root;
+        }
         void print2DUtil(node_ptr root, int space)
         {
             // Base case
@@ -274,7 +295,6 @@ namespace ft
             print2DUtil(root->_left_c, space);
         }
 
-// Wrapper over print2DUtil()
         void print2D(node_ptr root)
         {
             // Pass initial space count as 0
