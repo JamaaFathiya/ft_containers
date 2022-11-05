@@ -17,33 +17,50 @@ public:
     RedBlackTree(): BST<T, Compare, Allocator>::BST() {}
     ~RedBlackTree()  { this->clear_tree(); };
 
-    void LeftRotation(node_ptr& node){
-        node_ptr pivot   = node;
-        node_ptr r_child = node->_right_c;
+    void LeftRotation(node_ptr pivot) {
+        if (pivot == this->_tnull || pivot->_right_c == this->_tnull)
+            return;
+//        node_ptr node = pivot;
+        node_ptr r_child = pivot->_right_c;
 
         pivot->_right_c = r_child->_left_c;
-        r_child->_left_c->_parent = pivot;
+        if (r_child->_left_c != this->_tnull)
+            r_child->_left_c->_parent = pivot;
 
-        r_child->_left_c = pivot;
         r_child->_parent = pivot->_parent;
-        pivot->_parent = r_child;
 
-        node = r_child;
+        if (pivot->_parent == this->_tnull)
+            this->_root = r_child;
+        else if (this->child_position(pivot->_parent, pivot) == LEFT)
+            pivot->_parent->_left_c = r_child;
+        else
+            pivot->_parent->_right_c = r_child;
+        r_child->_left_c = pivot;
+        pivot->_parent = r_child;
     }
 
-    void RightRotation(node_ptr& node){
+    void RightRotation(node_ptr pivot){
+        if ( pivot == this->_tnull || pivot->_left_c == this->_tnull)
+            return;
 
-        node_ptr pivot   = node;
-        node_ptr l_child = node->_left_c;
+//        node_ptr node = pivot;
+        node_ptr l_child = pivot->_left_c;
 
         pivot->_left_c = l_child->_right_c;
-        l_child->_right_c->_parent = pivot;
+        if (l_child->_right_c != this->_tnull)
+            l_child->_right_c->_parent = pivot;
+
+        l_child->_parent = pivot->_parent;
+
+        if (pivot->_parent == this->_tnull)
+            this->_root = l_child;
+        else if (this->child_position(pivot->_parent, pivot) == LEFT)
+            pivot->_parent->_left_c = l_child;
+        else
+            pivot->_parent->_right_c = l_child;
 
         l_child->_right_c = pivot;
-        l_child->_parent = pivot->_parent;
         pivot->_parent = l_child;
-
-        node = l_child;
     }
 
     void RightLeftRotation(node_ptr& node){
@@ -62,16 +79,58 @@ public:
         }
     }
 
-//    void Recolor(node_ptr& node){
-//
-//    }
+    void fix_insert(node_ptr node) {
+        while (node->_parent->_color == RED) {
+            node_ptr uncle;
+
+            if (node->_parent == node->_parent->_parent->_left_c){
+                uncle = node->_parent->_parent->_right_c;
+
+                if (uncle->_color == RED){
+                    uncle->_color = BLACK;
+                    node->_parent->_color = BLACK;
+                    node->_parent->_parent->_color = RED;
+
+                    node = node->_parent->_parent;
+                } else {
+                    if (node == node->_parent->_right_c){
+                        node = node->_parent;
+                        LeftRotation(node);
+                    }
+                    node->_parent->_color = BLACK;
+                    node->_parent->_parent->_color = RED;
+                    RightRotation(node->_parent->_parent);
+                }
+            } else{
+                uncle = node->_parent->_parent->_left_c;
+
+                 if (uncle->_color == RED){
+                    uncle->_color = BLACK;
+                    node->_parent->_color = BLACK;
+                    node->_parent->_parent->_color = RED;
+
+                    node = node->_parent->_parent;
+                } else {
+                   if (node == node->_parent->_left_c){
+                       node = node->_parent;
+                       RightRotation(node);
+                   }
+                    node->_parent->_color = BLACK;
+                    node->_parent->_parent->_color = RED;
+                    LeftRotation(node->_parent->_parent);
+                }
+            }
+//            if (node == this->_root)
+//                break;
+        }
+        this->_root->_color = BLACK;
+    }
 
     void rdt_insert(value_type key){
        node_ptr  node = this->insert(key);
 
-        if (node){
-            ;
-        }
+        if (node != this->_tnull)
+            fix_insert(node);
     }
 
 
