@@ -5,6 +5,10 @@
 #include <__tree>
 #include <map>
 
+# define BOLD_RED       "\033[1;31mRED\e[0m"
+# define BLCK			"\e[33;2;37mBLACK\e[0m"
+# define RESET			"\e[0m"
+
 namespace ft
 {
     enum color{
@@ -36,6 +40,7 @@ namespace ft
             _node*      _left_c;
             _node*      _right_c;
             color       _color;
+
         };
 
         typedef std::allocator<_node>   alloc_type;
@@ -66,7 +71,7 @@ namespace ft
         }
 
         ~BST(){
-
+            clear_tree();
         }
         node_ptr new_node(value_type data = value_type())
         {
@@ -81,19 +86,6 @@ namespace ft
             return node;
         }
 
-//        void insert(value_type data, node_ptr& node){
-//            if (node == _tnull){ //if the tree is empty
-//                node = new_node(node, data);
-//            }
-//            else if(_cmp(node->_data, data)) {
-//                insert(data, node->_right_c);
-//                node->_right_c->_parent = node;
-//            }
-//            else if(_cmp(data, node->_data)){
-//                insert(data, node->_left_c);
-//                node->_left_c->_parent = node;
-//            }
-//        }
         node_ptr insert(value_type data) {
             node_ptr tmp = this->_root;
             node_ptr insert_in = _tnull;
@@ -104,8 +96,6 @@ namespace ft
                     tmp = tmp->_left_c;
                 else if (_cmp(tmp->_data, data))
                     tmp = tmp->_right_c;
-                else
-                    return nullptr;
             }
 
             tmp = new_node(data);
@@ -121,37 +111,42 @@ namespace ft
             return tmp;
         }
 
+        void Transplant(node_ptr old_node, node_ptr new_node){
+            if ( old_node->_parent == _tnull )
+                this->_root = new_node;
+            else if (child_position(old_node->_parent, old_node) == LEFT)
+                old_node->_parent->_left_c = new_node;
+            else
+                old_node->_parent->_right_c = new_node;
+            if (new_node != _tnull)
+                new_node->_parent = old_node->_parent;
+        }
+
         void delete_elem(value_type data) {
             node_ptr found = search(data);
-            node_ptr node_to_delete = found;
             if (found)
             {
-                if (is_leaf(found)){
-                    (child_position(found->_parent, found) == LEFT ? found->_parent->_left_c = _tnull : found->_parent->_right_c = _tnull);
-                } else if (found->_right_c != _tnull && found->_left_c != _tnull){
-                    node_ptr tmp = maximum(found->_left_c);
-                    found->_data = tmp->_data;
-                    if (child_position(tmp->_parent, tmp) == RIGHT)
-                 //if the maximum have a chile it's certain that it's a left_child
-                    tmp->_parent->_right_c = tmp->_left_c;
-                    else
-                        tmp->_parent->_left_c = tmp->_left_c;
-                    tmp->_left_c->_parent = (tmp->_left_c != _tnull) ? tmp->_parent : nullptr;
+                if (found->_left_c == _tnull) // if the node has only the right child we replace it by that child
+                    Transplant(found, found->_right_c);
+                else if (found->_right_c == _tnull) // if the node has only the left child
+                    Transplant(found, found->_left_c);
+                else {
+                    node_ptr tmp = minimum(found->_right_c); // if the node has both children we replace it by the min of the left subtree
 
-                    node_to_delete = tmp;
-                } else{
-                    node_ptr tmp = found;
-                    node_ptr root_child = (found->_left_c ? found->_left_c : found->_right_c);
-                    root_child->_parent = found->_parent;
-                    found = root_child;
-                    node_to_delete = tmp;
-
+                    if (tmp != found->_right_c) {
+                        Transplant(tmp, tmp->_right_c);
+                        tmp->_right_c = found->_right_c;
+                        tmp->_right_c->_parent = tmp;
+                    }
+                    Transplant(found, tmp);
+                    tmp->_left_c = found->_left_c;
+                    tmp->_left_c->_parent = tmp;
                 }
-                _alloc.destroy(node_to_delete);
-                _alloc.deallocate(node_to_delete, 1);
-                this->_size--;
             }
-        }
+            _alloc.destroy(found);
+            _alloc.deallocate(found, 1);
+            this->_size--;
+            }
 
         _child child_position(node_ptr parent, node_ptr child) {
             if (!parent || !child || parent == _tnull || child == _tnull)
@@ -193,7 +188,7 @@ namespace ft
             }
         }
 
-        void clear(node_ptr& root) {
+        void clear(node_ptr root) {
             if (root == _tnull)
                 return;
             clear(root->_right_c);
@@ -289,7 +284,7 @@ namespace ft
             std::cout << std::endl;
             for (int i = COUNT; i < space; i++)
                 std::cout << " ";
-            std::cout << root->_data << "\n";
+            std::cout << root->_data << " " <<(root->_color == RED ? BOLD_RED : BLCK )<< "\n";
 
             // Process left child
             print2DUtil(root->_left_c, space);
