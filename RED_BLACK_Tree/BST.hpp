@@ -122,31 +122,33 @@ namespace ft
                 new_node->_parent = old_node->_parent;
         }
 
-        void delete_elem(value_type data) {
-            node_ptr found = search(data);
-            if (found)
-            {
-                if (found->_left_c == _tnull) // if the node has only the right child we replace it by that child
-                    Transplant(found, found->_right_c);
-                else if (found->_right_c == _tnull) // if the node has only the left child
-                    Transplant(found, found->_left_c);
-                else {
-                    node_ptr tmp = minimum(found->_right_c); // if the node has both children we replace it by the min of the left subtree
-
-                    if (tmp != found->_right_c) {
-                        Transplant(tmp, tmp->_right_c);
-                        tmp->_right_c = found->_right_c;
-                        tmp->_right_c->_parent = tmp;
-                    }
-                    Transplant(found, tmp);
-                    tmp->_left_c = found->_left_c;
-                    tmp->_left_c->_parent = tmp;
-                }
-            }
-            _alloc.destroy(found);
-            _alloc.deallocate(found, 1);
-            this->_size--;
-            }
+//        void delete_elem(value_type data) {
+//
+//            node_ptr found = search(data);
+//            if (found)
+//            {
+//                if (found->_left_c == _tnull) // if the node has only the right child we replace it by that child
+//                    Transplant(found, found->_right_c);
+//                else if (found->_right_c == _tnull) // if the node has only the left child
+//                    Transplant(found, found->_left_c);
+//                else {
+//                    node_ptr tmp = minimum(found->_right_c); // if the node has both children we replace it by the min of the left subtree
+//
+//                    if (tmp != found->_right_c) {
+//                        Transplant(tmp, tmp->_right_c);
+//                        tmp->_right_c = found->_right_c;
+//                        tmp->_right_c->_parent = tmp;
+//                    }
+//                    Transplant(found, tmp);
+//                    tmp->_left_c = found->_left_c;
+//                    tmp->_left_c->_parent = tmp;
+//                }
+//            }
+//            _alloc.destroy(found);
+//            _alloc.deallocate(found, 1);
+//            this->_size--;
+//
+//        }
 
         _child child_position(node_ptr parent, node_ptr child) {
             if (!parent || !child || parent == _tnull || child == _tnull)
@@ -256,6 +258,10 @@ namespace ft
             return _tnull;
         }
 
+        node_ptr sibling(node_ptr node){
+            return (child_position(node->_parent, node) == LEFT ? node->_parent->_right_c : node->_parent->_left_c);
+        }
+
         size_type size() const{
             return  this->_size;
         }
@@ -264,9 +270,6 @@ namespace ft
             return this->_root;
         }
 
-        node_ptr &root_ref() {
-            return this->_root;
-        }
         void print2DUtil(node_ptr root, int space)
         {
             // Base case
