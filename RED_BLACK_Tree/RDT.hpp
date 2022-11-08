@@ -226,9 +226,5 @@ namespace ft {
         x->_color = BLACK;
 }
 
-    node_ptr& root_ref(){
-        return this->_root;
-    }
-
 };
 };
