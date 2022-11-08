@@ -122,35 +122,7 @@ namespace ft
                 new_node->_parent = old_node->_parent;
         }
 
-//        void delete_elem(value_type data) {
-//
-//            node_ptr found = search(data);
-//            if (found)
-//            {
-//                if (found->_left_c == _tnull) // if the node has only the right child we replace it by that child
-//                    Transplant(found, found->_right_c);
-//                else if (found->_right_c == _tnull) // if the node has only the left child
-//                    Transplant(found, found->_left_c);
-//                else {
-//                    node_ptr tmp = minimum(found->_right_c); // if the node has both children we replace it by the min of the left subtree
-//
-//                    if (tmp != found->_right_c) {
-//                        Transplant(tmp, tmp->_right_c);
-//                        tmp->_right_c = found->_right_c;
-//                        tmp->_right_c->_parent = tmp;
-//                    }
-//                    Transplant(found, tmp);
-//                    tmp->_left_c = found->_left_c;
-//                    tmp->_left_c->_parent = tmp;
-//                }
-//            }
-//            _alloc.destroy(found);
-//            _alloc.deallocate(found, 1);
-//            this->_size--;
-//
-//        }
-
-        _child child_position(node_ptr parent, node_ptr child) {
+        _child child_position(node_ptr parent, node_ptr child) const {
             if (!parent || !child || parent == _tnull || child == _tnull)
                 return NONE;
             if (parent->_left_c == child)
@@ -207,13 +179,13 @@ namespace ft
             _tnull = nullptr;
         }
 
-        node_ptr maximum(node_ptr node) { //max
+        node_ptr maximum(node_ptr node) const { //max
             while (node && node != _tnull && node->_right_c != _tnull)
                 node = node->_right_c;
             return  node;
         }
 
-        node_ptr successor(node_ptr node) {
+        node_ptr successor(node_ptr node) const {
             if (node->_right_c != _tnull)
                 return minimum(node->_right_c);
             else{
@@ -226,13 +198,13 @@ namespace ft
             }
         }
 
-        node_ptr minimum(node_ptr node) {//min
+        node_ptr minimum(node_ptr node) const {//min
             while (node && node != _tnull && node->_left_c != _tnull)
                 node = node->_left_c;
             return  node;
         }
 
-        node_ptr predecessor(node_ptr node) {
+        node_ptr predecessor(node_ptr node) const {
             if (node->_left_c != _tnull)
                 return maximum(node->_left_c);
             else{
@@ -245,28 +217,24 @@ namespace ft
             }
         }
 
-        node_ptr grand_parent(node_ptr node) {
+        node_ptr grand_parent(node_ptr node) const {
             if (node && node->_parent && node->_parent->_parent)
                 return node->_parent->_parent;
             return _tnull;
         }
 
-        node_ptr node_uncle(node_ptr node) {
+        node_ptr node_uncle(node_ptr node) const {
             node_ptr grand_pa = grand_parent(node);
             if (grand_pa != _tnull)
                 return (child_position(grand_pa, node->_parent) == LEFT ? grand_pa->_right_c : grand_pa->_left_c );
             return _tnull;
         }
 
-        node_ptr sibling(node_ptr node){
-            return (child_position(node->_parent, node) == LEFT ? node->_parent->_right_c : node->_parent->_left_c);
-        }
-
-        size_type size() const{
+        size_type size() const {
             return  this->_size;
         }
 
-        node_ptr root() {
+        node_ptr root() const {
             return this->_root;
         }
 
