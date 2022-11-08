@@ -15,9 +15,7 @@ namespace ft {
 
     public:
         RedBlackTree() {}
-
         ~RedBlackTree() {}
-
 
         void LeftRotation(node_ptr pivot) {
             if (pivot == this->_tnull || pivot->_right_c == this->_tnull)
@@ -52,20 +50,6 @@ namespace ft {
 
             l_child->_right_c = pivot;
             pivot->_parent = l_child;
-        }
-
-        void RightLeftRotation(node_ptr &node) {
-            if (node != this->_tnull) {
-                this->RightRotation(node->_right_c);
-                this->LeftRotation(node);
-            }
-        }
-
-        void LeftRightRotation(node_ptr &node) {
-            if (node != this->_tnull) {
-                this->LeftRotation(node->_left_c);
-                this->RightRotation(node);
-            }
         }
 
         void fix_insert(node_ptr node) {
