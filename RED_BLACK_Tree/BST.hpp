@@ -25,13 +25,13 @@ namespace ft
 #define COUNT 10
 
     template<typename T, class Compare = std::less<T> , class Allocator = std::allocator<T> >
+
     class BST
     {
 
     public:
         typedef T           value_type;
         typedef size_t      size_type;
-
 
         struct _node
         {
@@ -42,9 +42,11 @@ namespace ft
             color       _color;
 
         };
-
-        typedef std::allocator<_node>   alloc_type;
-
+        /*Since rebind is a member template of Allocator and Allocator is a template argument,
+        the "rebind"  becomes a dependent name. To indicate that a dependent name is a template, it needs to be prefixed by template.
+        Without the template keyword the < would be considered to be the less-than operator.
+        */
+        typedef typename Allocator::template rebind<_node>::other alloc_type;
         typedef _node* node_ptr;
         typedef _node& node_reference;
         typedef Compare compare_func;
