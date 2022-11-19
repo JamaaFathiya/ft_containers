@@ -4,17 +4,20 @@
 
 namespace ft {
 
-
+    template <class T, class NodePtr, class Compare, class Allocator>
+    class tree_iter;
     template<typename T, class Compare = std::less<T>, class Allocator = std::allocator<T> >
     class RedBlackTree : public BST<T, Compare, Allocator> {
 
+    public:
         typedef T value_type;
         typedef BST<T, Compare, Allocator> RBT;
+        typedef typename BST<T, Compare, Allocator>::node node;
         typedef typename BST<T, Compare, Allocator>::node_ptr node_ptr;
         typedef typename BST<T, Compare, Allocator>::node_reference node_reference;
 
-    public:
-        RedBlackTree() {}
+        RedBlackTree(){}
+
         ~RedBlackTree() {}
 
         void LeftRotation(node_ptr pivot) {
@@ -104,6 +107,7 @@ namespace ft {
         void delete_elem(value_type data) {
             node_ptr found = this->search(data);
             if (found) {
+                found->_prev->_next = found->_next;
                 color origin_color;
                 node_ptr x;
                 origin_color = found->_color;
@@ -142,6 +146,7 @@ namespace ft {
                 if (origin_color == BLACK)
                     fix_delete(x);
             }
+            this->_tnull->_prev = this->maximum(this->_root);
             this->_alloc.destroy(found);
             this->_alloc.deallocate(found, 1);
             this->_size--;
@@ -163,11 +168,13 @@ namespace ft {
 
                         w = x->_parent->_right_c; // the double black problem still exits which lead us to the other cases.
                     } // case 2
-                    if (w->_color == BLACK && w->_left_c->_color == BLACK && w->_right_c->_color == BLACK) { //sibling and it's both children are BLACK
+                    if (w->_color == BLACK && w->_left_c->_color == BLACK &&
+                        w->_right_c->_color == BLACK) { //sibling and it's both children are BLACK
                         w->_color = RED;   // subtract RED from the right subtree and add it to the parent (if p is RED all good, else a new double black in the x.p)
                         x = x->_parent;
                     } else { // case 3.
-                        if (w->_right_c->_color == BLACK) { // the close nephew is RED , we'll make it the root of the subtree with the color of the original root.
+                        if (w->_right_c->_color ==
+                            BLACK) { // the close nephew is RED , we'll make it the root of the subtree with the color of the original root.
                             w->_left_c->_color = BLACK; // switch left color with parent
                             w->_color = RED; // ...
                             RightRotation(w); // right rotate so w.left become w
@@ -179,21 +186,21 @@ namespace ft {
                         LeftRotation(x->_parent);
                         x = this->_root; // all good.
                     }
-                } else if (x == x->_parent->_right_c){ // Mirror of the four cases above.
+                } else if (x == x->_parent->_right_c) { // Mirror of the four cases above.
                     w = x->_parent->_left_c;
                     // case /1
-                    if (w->_color == RED){
+                    if (w->_color == RED) {
                         w->_color = BLACK;
                         x->_parent->_color = RED;
                         RightRotation(x->_parent);
 
                         w = x->_parent->_left_c;
                     } // case /2
-                    if (w->_color == BLACK && w->_left_c->_color == BLACK && w->_right_c->_color == BLACK){
+                    if (w->_color == BLACK && w->_left_c->_color == BLACK && w->_right_c->_color == BLACK) {
                         w->_color = RED;
                         x = x->_parent;
                     } else { // case /3
-                        if (w->_left_c->_color == BLACK){
+                        if (w->_left_c->_color == BLACK) {
                             w->_right_c->_color = BLACK;
                             w->_color = RED;
                             LeftRotation(w);
@@ -207,8 +214,89 @@ namespace ft {
                     }
                 }
             }
-        x->_color = BLACK;
-}
+            x->_color = BLACK;
+        }
 
-};
+        node_ptr min() const{
+            return this->minimum(this->_root);
+        }
+
+        node_ptr max() const{
+            return this->maximum(this->_root);
+        }
+
+
+        typedef tree_iter<T, node_ptr, Compare, Allocator> iter;
+
+
+       const tree_iter <T, node_ptr, Compare, Allocator> begin() const{
+            return iter(this->min());
+        }
+
+        const tree_iter <T, node_ptr, Compare, Allocator> end() const{
+            return iter(this->_tnull);
+        }
+    };
+
+    /*-------------------------- Tree iterator class --------------------------*/
+
+    template <class T, class NodePtr, class Compare, class Allocator>
+    class tree_iter{
+    public:
+        typedef T value_type;
+        typedef NodePtr pointer;
+        typedef value_type& reference;
+    private:
+        pointer _ptr;
+
+    public:
+        tree_iter(){}
+        tree_iter(pointer ptr): _ptr(ptr){}
+
+        tree_iter& operator=(const tree_iter<T, NodePtr, Compare, Allocator>& iter){
+            if (this != &iter)
+                this->_ptr = iter._ptr;
+            return *this;
+        }
+
+        tree_iter& operator++(){
+            _ptr = _ptr->_next;
+            return *this;
+        }
+
+        tree_iter& operator--(){
+            _ptr = _ptr->_prev;
+            return *this;
+        }
+
+        tree_iter operator++(int){
+            tree_iter tmp(_ptr);
+            _ptr = _ptr->_next;
+            return tmp;
+        }
+
+        tree_iter operator--(int){
+            tree_iter tmp(_ptr);
+            _ptr = _ptr->_prev;
+            return tmp;
+        }
+        reference  operator*(){
+            return (_ptr->_data);
+        }
+
+        pointer  operator->() const{
+            return &(*(_ptr->_data));
+        }
+
+        bool operator!=(const tree_iter<T, NodePtr, Compare, Allocator>& it){
+            return (this->_ptr != it._ptr);
+        }
+
+        bool operator==(const tree_iter<T, NodePtr, Compare, Allocator>& it){
+            return (this->_ptr == it._ptr);
+        }
+    };
+
+
+
 };
