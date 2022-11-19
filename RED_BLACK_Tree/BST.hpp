@@ -5,9 +5,9 @@
 #include <__tree>
 #include <map>
 
-# define BOLD_RED       "\033[1;31mRED\e[0m"
-# define BLCK			"\e[33;2;37mBLACK\e[0m"
-# define RESET			"\e[0m"
+//# define BOLD_RED       "\033[1;31mRED\e[0m"
+//# define BLCK			"\e[33;2;37mBLACK\e[0m"
+//# define RESET			"\e[0m"
 
 namespace ft
 {
@@ -33,15 +33,17 @@ namespace ft
         typedef T           value_type;
         typedef size_t      size_type;
 
-        struct _node
+        typedef struct _node
         {
             value_type  _data;
             _node*      _parent;
             _node*      _left_c;
             _node*      _right_c;
+            _node*      _next;
+            _node*      _prev;
             color       _color;
 
-        };
+        } node;
         /*Since rebind is a member template of Allocator and Allocator is a template argument,
         the "rebind"  becomes a dependent name. To indicate that a dependent name is a template, it needs to be prefixed by template.
         Without the template keyword the < would be considered to be the less-than operator.
@@ -61,10 +63,13 @@ namespace ft
 
     public:
 
-        BST() : _size(0) {
+        BST() {
+            _size = 0;
             this->_tnull = _alloc.allocate(1);
             _alloc.construct(this->_tnull, _node());
             this->_tnull->_right_c = nullptr;
+            this->_tnull->_prev = nullptr;
+            this->_tnull->_next = nullptr;
             this->_tnull->_left_c = nullptr;
             this->_tnull->_parent = nullptr;
             this->_tnull->_color = BLACK;
@@ -83,6 +88,8 @@ namespace ft
             node->_parent = _tnull;
             node->_left_c = _tnull;
             node->_right_c = _tnull;
+            node->_next = _tnull;
+            node->_prev = _tnull;
             node->_color = RED;
 
             return node;
@@ -109,6 +116,10 @@ namespace ft
             else
                 insert_in->_right_c = tmp;
 
+            tmp->_prev = predecessor(tmp);
+            tmp->_next = successor(tmp);
+            tmp->_prev->_next = tmp;
+            this->_tnull->_prev = maximum(this->_root);
             this->_size++;
             return tmp;
         }
@@ -156,8 +167,8 @@ namespace ft
         void inorder_traverse(node_ptr root) {
             if(root != nullptr && root != _tnull){
                 inorder_traverse(root->_left_c);
-                std::cout << "data: "<< root->_data << std::endl;
-                std::cout << "parent data " << root->_parent->_data << std::endl;
+                std::cout << "data: "<< root->_data.first << std::endl;
+                std::cout << "parent data " << root->_parent->_data.first << std::endl;
                 std::cout << "color " << (root->_color == RED ? "RED": "BLACK") << std::endl;
                 std::cout << "\n";
                 inorder_traverse(root->_right_c);
@@ -240,28 +251,28 @@ namespace ft
             return this->_root;
         }
 
-        void print2DUtil(node_ptr root, int space)
-        {
-            // Base case
-            if (root == NULL)
-                return;
-
-            // Increase distance between levels
-            space += COUNT;
-
-            // Process right child first
-            print2DUtil(root->_right_c, space);
-
-            // Print current node after space
-            // count
-            std::cout << std::endl;
-            for (int i = COUNT; i < space; i++)
-                std::cout << " ";
-            std::cout << root->_data << " " <<(root->_color == RED ? BOLD_RED : BLCK )<< "\n";
-
-            // Process left child
-            print2DUtil(root->_left_c, space);
-        }
+//        void print2DUtil(node_ptr root, int space)
+//        {
+//            // Base case
+//            if (root == NULL)
+//                return;
+//
+//            // Increase distance between levels
+//            space += COUNT;
+//
+//            // Process right child first
+//            print2DUtil(root->_right_c, space);
+//
+//            // Print current node after space
+//            // count
+//            std::cout << std::endl;
+//            for (int i = COUNT; i < space; i++)
+//                std::cout << " ";
+//            std::cout << root->_data << " " <<(root->_color == RED ? BOLD_RED : BLCK )<< "\n";
+//
+//            // Process left child
+//            print2DUtil(root->_left_c, space);
+//        }
 
         void print2D(node_ptr root)
         {
