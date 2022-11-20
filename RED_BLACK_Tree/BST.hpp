@@ -35,7 +35,7 @@ namespace ft
 
         typedef struct _node
         {
-            value_type  _data;
+            value_type*  _data;
             _node*      _parent;
             _node*      _left_c;
             _node*      _right_c;
@@ -48,13 +48,15 @@ namespace ft
         the "rebind"  becomes a dependent name. To indicate that a dependent name is a template, it needs to be prefixed by template.
         Without the template keyword the < would be considered to be the less-than operator.
         */
-        typedef typename Allocator::template rebind<_node>::other alloc_type;
+        typedef Allocator pair_alloc_type;
+        typedef typename Allocator::template rebind<_node>::other node_alloc_type;
         typedef _node* node_ptr;
         typedef _node& node_reference;
         typedef Compare compare_func;
 
     protected:
-        alloc_type      _alloc;
+        pair_alloc_type     p_alloc;
+        node_alloc_type      _alloc;
         compare_func    _cmp;
         node_ptr        _root;
         node_ptr        _tnull;
@@ -63,7 +65,7 @@ namespace ft
 
     public:
 
-        BST() {
+        BST(const compare_func& cmp ): _cmp(cmp) {
             _size = 0;
             this->_tnull = _alloc.allocate(1);
             _alloc.construct(this->_tnull, _node());
@@ -84,7 +86,8 @@ namespace ft
         {
             node_ptr node = _alloc.allocate(1);
             _alloc.construct(node, _node());
-            node->_data = data;
+            node->_data = p_alloc.allocate(1);
+            p_alloc.construct(node->_data, data);
             node->_parent = _tnull;
             node->_left_c = _tnull;
             node->_right_c = _tnull;
@@ -101,9 +104,9 @@ namespace ft
 
             while (tmp != _tnull){
                 insert_in = tmp;
-                if (_cmp(data, tmp->_data))
+                if (_cmp(data, *(tmp->_data)))
                     tmp = tmp->_left_c;
-                else if (_cmp(tmp->_data, data))
+                else if (_cmp(*(tmp->_data), data))
                     tmp = tmp->_right_c;
             }
 
@@ -111,7 +114,7 @@ namespace ft
             tmp->_parent = insert_in;
             if (insert_in == _tnull)
                 this->_root = tmp;
-            else if (_cmp(data,insert_in->_data))
+            else if (_cmp(data,*(insert_in->_data)))
                 insert_in->_left_c = tmp;
             else
                 insert_in->_right_c = tmp;
@@ -149,20 +152,6 @@ namespace ft
             return (node->_right_c == _tnull) && (node->_left_c == _tnull);
         }
 
-        node_ptr search(value_type data) {
-
-            node_ptr root = this->_root;
-            while (root && root != _tnull){
-                if (root->_data == data)
-                    return  root;
-                if (data > root->_data)
-                    root = root->_right_c;
-                else
-                    root = root->_left_c;
-            }
-//            throw std::exception();
-            return nullptr;
-        }
 
         void inorder_traverse(node_ptr root) {
             if(root != nullptr && root != _tnull){
@@ -180,6 +169,8 @@ namespace ft
                 return;
             clear(root->_right_c);
             clear(root->_left_c);
+            p_alloc.destroy(root->_data);
+            p_alloc.deallocate(root->_data, 1);
             _alloc.destroy(root);
             _alloc.deallocate(root, 1);
             root  = nullptr;
@@ -251,6 +242,13 @@ namespace ft
             return this->_root;
         }
 
+    };
+};
+//        void print2D(node_ptr root)
+//        {
+//            // Pass initial space count as 0
+//            print2DUtil(root, 0);
+//        }
 //        void print2DUtil(node_ptr root, int space)
 //        {
 //            // Base case
@@ -273,11 +271,3 @@ namespace ft
 //            // Process left child
 //            print2DUtil(root->_left_c, space);
 //        }
-
-        void print2D(node_ptr root)
-        {
-            // Pass initial space count as 0
-            print2DUtil(root, 0);
-        }
-    };
-};
