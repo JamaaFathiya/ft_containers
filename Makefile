@@ -1,11 +1,11 @@
 NAME	= ft_containers
-CC		= c++ -Wall -Wextra -Werror -std=c++98 -g
+CC		= c++ -Wall -Wextra -Werror -std=c++98 -g -fsanitize=address
 RM		= rm -rf
 
-VECTOR_FILES = ft_vector/tester_vector
-STACK_FILES  = ft_stack/tester_stack
+#VECTOR_FILES = tester/tester_vector
+#STACK_FILES  = tester/tester_stack
 
-FILES	=  $(VECTOR_FILES) $(STACK_FILES) main
+FILES	=  $(VECTOR_FILES) $(STACK_FILES) main tester/tester_stack tester/tester_vector
 
 SRC		= $(FILES:=.cpp)
 OBJ		= $(FILES:=.o)
@@ -17,7 +17,11 @@ vector  =  ft_vector/ft_vector.hpp
 
 stack   =  ft_stack/ft_stack.hpp
 
-INCLUDES = $(utils) $(vector) $(stack) tester.hpp
+RDT	    =  RED_BLACK_Tree/BST.hpp RED_BLACK_Tree/RDT.hpp
+
+MAP     = ft_map/ft_map.hpp
+
+INCLUDES = $(utility) $(vector) $(stack) $(RDT)  $(MAP) tester/tester.hpp
 
 GRAY 	= \e[33;2;37m
 YELLOW	= \e[93;5;226m
