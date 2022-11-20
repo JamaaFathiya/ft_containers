@@ -81,7 +81,8 @@ namespace ft
                     this->_alloc.destroy(this->_da + i);
                     this->_alloc.construct(this->_da + i , value_type());
                 }
-                this->_da[i] = this->_da[i + n];
+                if (i + n < this->_size)
+                    this->_da[i] = this->_da[i + n];
             }
         }
 
