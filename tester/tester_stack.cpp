@@ -1,6 +1,6 @@
 
-#include "../tester/tester.hpp"
-#include "ft_stack.hpp"
+#include "tester.hpp"
+#include "../ft_stack/ft_stack.hpp"
 #include <stack>
 
 template <class T>

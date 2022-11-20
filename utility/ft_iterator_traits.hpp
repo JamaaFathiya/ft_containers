@@ -1,3 +1,5 @@
+#pragma once
+
 #include <iostream>
 #include <cstddef> // for ptrdiff_t
 

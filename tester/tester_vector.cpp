@@ -1214,6 +1214,9 @@ void test_vector()
         std::vector<int> stl_insert(range_array, range_array + 5);
         ft::vector<int> ft_insert(ft_iterator_beg, ft_iterator_beg + 5);
 
+//        stl_insert.reserve(10);
+//        ft_insert.reserve(10);
+
         stl_insert.insert(stl_insert.begin() + 2, 9999);
         ft_insert.insert(ft_insert.begin() + 2, 9999);
 
@@ -1243,6 +1246,9 @@ void test_vector()
         std::vector<std::string> stl_insert(range_array, range_array + 5);
         ft::vector<std::string> ft_insert(ft_iterator_beg, ft_iterator_beg + 5);
 
+//        stl_insert.reserve(16);
+//        ft_insert.reserve(16);
+
         stl_insert.insert(stl_insert.begin() + 2, 5, "4269");
         ft_insert.insert(ft_insert.begin() + 2, 5, "4269");
 
@@ -1271,8 +1277,9 @@ void test_vector()
         std::vector<int> stl_insert(4);
         ft::vector<int> ft_insert(4);
 
-        stl_insert.insert(stl_insert.begin() + 1, range_array, range_array + 5);
-        ft_insert.insert(ft_insert.begin() + 1, ft_iterator_beg, ft_iterator_beg + 5);
+
+        stl_insert.insert(stl_insert.begin() + 1 , range_array, range_array + 5);
+         ft_insert.insert(ft_insert.begin() + 1, ft_iterator_beg, ft_iterator_beg + 5);
 
 
         fs.open("./tester/vectors_output/insert_range", std::fstream::in | std::fstream::out | std::fstream::trunc);

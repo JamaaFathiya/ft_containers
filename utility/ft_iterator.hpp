@@ -1,3 +1,5 @@
+#pragma once
+
 #include <iostream>
 #include "ft_iterator_traits.hpp"
 #include <iterator>
