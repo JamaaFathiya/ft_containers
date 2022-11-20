@@ -1,23 +1,35 @@
 #pragma once
 #include "BST.hpp"
 #include <map>
+#include <exception>
+#include "../utility/ft_iterator.hpp"
+
 
 namespace ft {
 
-    template <class T, class NodePtr, class Compare, class Allocator>
+    template <class T, class NodePtr>
     class tree_iter;
-    template<typename T, class Compare = std::less<T>, class Allocator = std::allocator<T> >
+
+    template<typename T, typename key_t , typename mapped_t, class Compare , class Allocator = std::allocator<T> >
     class RedBlackTree : public BST<T, Compare, Allocator> {
 
     public:
-        typedef T value_type;
-        typedef BST<T, Compare, Allocator> RBT;
-        typedef typename BST<T, Compare, Allocator>::node node;
-        typedef typename BST<T, Compare, Allocator>::node_ptr node_ptr;
-        typedef typename BST<T, Compare, Allocator>::node_reference node_reference;
+        typedef T                                   value_type;
+        typedef key_t                               key_type;
+        typedef mapped_t                            mapped_type;
+        typedef BST<T, Compare, Allocator>          BST;
+        typedef Compare                             cmp_func;
+        typedef typename BST::node                  node;
+        typedef typename BST::node_ptr              node_ptr;
+        typedef typename BST::node_reference        node_reference;
 
-        RedBlackTree(){}
+        typedef tree_iter<T, node_ptr>              iter;
+        typedef tree_iter<const T, node_ptr>        const_iter;
+        typedef ft::reverse_iterator<iter>          rev_iter;
+        typedef ft::reverse_iterator<const_iter>    const_rev_iter;
 
+
+        RedBlackTree(const cmp_func& cmp ): BST(cmp){}
         ~RedBlackTree() {}
 
         void LeftRotation(node_ptr pivot) {
@@ -104,56 +116,7 @@ namespace ft {
                 fix_insert(node);
         }
 
-        void delete_elem(value_type data) {
-            node_ptr found = this->search(data);
-            if (found) {
-                found->_prev->_next = found->_next;
-                color origin_color;
-                node_ptr x;
-                origin_color = found->_color;
-
-                if (found->_left_c == this->_tnull) // if the node has only the right child we replace it by that child
-                {
-                    x = found->_right_c;
-                    x->_parent = found->_parent;
-                    this->Transplant(found, found->_right_c);
-                } else if (found->_right_c == this->_tnull) // if the node has only the left child
-                {
-                    x = found->_left_c;
-                    x->_parent = found->_parent;
-                    this->Transplant(found, found->_left_c);
-                } else {
-                    node_ptr tmp = this->minimum(
-                            found->_right_c); // if the node has both children we replace it by the min of the left subtree
-                    origin_color = tmp->_color;
-
-                    x = tmp->_right_c;
-                    x->_parent = tmp->_parent;
-                    if (tmp != found->_right_c) {
-                        this->Transplant(tmp, tmp->_right_c);
-                        tmp->_right_c = found->_right_c;
-                        tmp->_right_c->_parent = tmp;
-                    }
-//                    else
-//                        x->_parent = tmp;
-
-                    this->Transplant(found, tmp);
-                    tmp->_left_c = found->_left_c;
-                    tmp->_left_c->_parent = tmp;
-
-                    tmp->_color = found->_color;
-                }
-                if (origin_color == BLACK)
-                    fix_delete(x);
-            }
-            this->_tnull->_prev = this->maximum(this->_root);
-            this->_alloc.destroy(found);
-            this->_alloc.deallocate(found, 1);
-            this->_size--;
-
-        }
-
-        void fix_delete(node_ptr x) {
+        void delete_node(node_ptr x) {
             node_ptr w;
             while (x != this->_root && x->_color == BLACK) {
 
@@ -225,38 +188,122 @@ namespace ft {
             return this->maximum(this->_root);
         }
 
+        mapped_type& search_key(const key_type& key) const {
 
-        typedef tree_iter<T, node_ptr, Compare, Allocator> iter;
+            node_ptr root = this->_root;
+            while (root && root != this->_tnull){
+                if (root->_data->first == key)
+                    return  root->_data->second;
+                if (key > root->_data->first)
+                    root = root->_right_c;
+                else
+                    root = root->_left_c;
+            }
+            throw std::out_of_range("key out of range");
+        }
+
+        iter search(const key_type& key) const {
+
+            node_ptr root = this->_root;
+            while (root && root != this->_tnull){
+                if (root->_data->first == key)
+                    return  iter(root);
+                if (key > root->_data->first)
+                    root = root->_right_c;
+                else
+                    root = root->_left_c;
+            }
+            return this->end();
+        }
 
 
-       const tree_iter <T, node_ptr, Compare, Allocator> begin() const{
+        size_t max_size(){
+            return this->p_alloc.max_size();
+        }
+        /*-------------------- Iterators --------------------------*/
+
+
+       const tree_iter <T, node_ptr> begin() const{
             return iter(this->min());
         }
 
-        const tree_iter <T, node_ptr, Compare, Allocator> end() const{
+        const tree_iter <T, node_ptr> end() const{
             return iter(this->_tnull);
         }
+
+        const tree_iter <const T, node_ptr> cbegin() const{
+            return const_iter(this->min());
+        }
+
+        const tree_iter <const T,node_ptr> cend() const{
+            return const_iter(this->_tnull);
+        }
+
+        const ft::reverse_iterator<iter> rbegin() const{
+            return rev_iter(this->end());
+        }
+        const ft::reverse_iterator<iter> rend() const{
+            return rev_iter(this->begin());
+        }
+
+        const ft::reverse_iterator<const_iter> crbegin() const{
+            return const_rev_iter(this->end());
+        }
+        const ft::reverse_iterator<const_iter> crend() const{
+            return const_rev_iter(this->begin());
+        }
+
+        /*---------------- Insert Range of Iterators -------------------*/
+
+        template<class Iter>
+        void insert_range(Iter begin, Iter end){
+            Iter tmp = begin;
+            for(; tmp != end; tmp++)
+                this->insert(*tmp);
+        }
+
+        /*---------------------- Operators Overloads -------------------*/
+
+        RedBlackTree& operator=(const RedBlackTree& other){
+
+            this->clear(this->_root);
+            this->_root = this->_tnull;
+            this->insert_range(other.begin(), other.end());
+            return *this;
+        }
+
     };
 
     /*-------------------------- Tree iterator class --------------------------*/
 
-    template <class T, class NodePtr, class Compare, class Allocator>
+    template <class T, class NodePtr>
     class tree_iter{
+
     public:
-        typedef T value_type;
-        typedef NodePtr pointer;
-        typedef value_type& reference;
+        typedef T                               value_type;
+        typedef NodePtr                         pointer;
+        typedef value_type&                     reference;
+        typedef value_type*                     type_pointer;
+        typedef ptrdiff_t                       difference_type;
+        typedef std::bidirectional_iterator_tag iterator_category;
+
     private:
         pointer _ptr;
 
     public:
-        tree_iter(){}
+
+        tree_iter(): _ptr(nullptr){}
         tree_iter(pointer ptr): _ptr(ptr){}
 
-        tree_iter& operator=(const tree_iter<T, NodePtr, Compare, Allocator>& iter){
+
+        tree_iter& operator=(const tree_iter<T, NodePtr>& iter){
             if (this != &iter)
                 this->_ptr = iter._ptr;
             return *this;
+        }
+
+        operator tree_iter<const value_type, NodePtr>() const{
+            return tree_iter<const value_type, NodePtr>(_ptr);
         }
 
         tree_iter& operator++(){
@@ -281,18 +328,18 @@ namespace ft {
             return tmp;
         }
         reference  operator*(){
-            return (_ptr->_data);
+            return *(_ptr->_data);
         }
 
-        pointer  operator->() const{
-            return &(*(_ptr->_data));
+        type_pointer  operator->() const{
+            return ((_ptr->_data));
         }
 
-        bool operator!=(const tree_iter<T, NodePtr, Compare, Allocator>& it){
+        bool operator!=(const tree_iter& it){
             return (this->_ptr != it._ptr);
         }
 
-        bool operator==(const tree_iter<T, NodePtr, Compare, Allocator>& it){
+        bool operator==(const tree_iter& it){
             return (this->_ptr == it._ptr);
         }
     };
