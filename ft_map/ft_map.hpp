@@ -2,6 +2,7 @@
 #include <map>
 #include "../RED_BLACK_Tree/RDT.hpp"
 #include "../utility/ft_pair.hpp"
+#include "../utility/ft_lexicographical_compare.hpp"
 
 namespace ft {
     template<
@@ -24,7 +25,7 @@ namespace ft {
         typedef typename allocator_type::size_type size_type;
         typedef typename allocator_type::difference_type difference_type;
 
-
+    private:
         class value_compare : public std::binary_function<value_type, value_type, bool> {
         protected:
             key_compare comp;
@@ -108,7 +109,7 @@ namespace ft {
         }
 
         reverse_iterator rend() const {
-            return _tree.rend();
+            return  _tree.rend();
         }
 
         const_reverse_iterator crbegin() const {
@@ -148,7 +149,8 @@ namespace ft {
         }
 
         size_type max_size() const {
-            return _tree.max_size();
+//            return _tree.max_size();
+                return 288230376151711743;
         }
 
         /*------------------- Lookup ----------------------*/
@@ -223,7 +225,7 @@ namespace ft {
         }
 
         value_compare value_comp() const {
-            return this->value_compare(this->_cmp);
+            return value_compare(_cmp);
         }
 
 
