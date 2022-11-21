@@ -3,6 +3,7 @@
 #include <map>
 #include <exception>
 #include "../utility/ft_iterator.hpp"
+#include "../utility/ft_pair.hpp"
 
 
 namespace ft {
@@ -29,7 +30,7 @@ namespace ft {
         typedef ft::reverse_iterator<const_iter>    const_rev_iter;
 
 
-        RedBlackTree(const cmp_func& cmp ): BST(cmp){}
+        RedBlackTree(const cmp_func& cmp): BST(cmp){}
         ~RedBlackTree() {}
 
         void LeftRotation(node_ptr pivot) {
@@ -109,14 +110,68 @@ namespace ft {
             this->_root->_color = BLACK;
         }
 
-        void RBT_insert(value_type key) {
+        iter RBT_insert(value_type key) {
             node_ptr node = this->insert(key);
 
             if (node != this->_tnull)
                 fix_insert(node);
+            return iter(node);
         }
 
-        void delete_node(node_ptr x) {
+        void delete_elem(key_type data) {
+            node_ptr found = this->search_node(data);
+            if (found) {
+
+                found->_prev->_next = found->_next;
+                found->_next->_prev = found->_prev;
+                color origin_color;
+                node_ptr x;
+                origin_color = found->_color;
+
+                if (found->_left_c == this->_tnull) // if the node has only the right child we replace it by that child
+                {
+                    x = found->_right_c;
+                    x->_parent = found->_parent;
+                    this->Transplant(found, found->_right_c);
+                } else if (found->_right_c == this->_tnull) // if the node has only the left child
+                {
+                    x = found->_left_c;
+                    x->_parent = found->_parent;
+                    this->Transplant(found, found->_left_c);
+                } else {
+                    node_ptr tmp = this->minimum(
+                            found->_right_c); // if the node has both children we replace it by the min of the left subtree
+                    origin_color = tmp->_color;
+
+                    x = tmp->_right_c;
+//                    if (x->_parent != this->_tnull)
+//                        x->_parent = tmp->_parent;
+                    if (tmp != found->_right_c) {
+                        this->Transplant(tmp, tmp->_right_c);
+                        tmp->_right_c = found->_right_c;
+                        tmp->_right_c->_parent = tmp;
+                    }
+                    else
+                        x->_parent = tmp;
+
+                    this->Transplant(found, tmp);
+                    tmp->_left_c = found->_left_c;
+                    tmp->_left_c->_parent = tmp;
+
+                    tmp->_color = found->_color;
+                }
+                if (origin_color == BLACK)
+                    fix_delete(x);
+            }
+            this->_alloc.destroy(found);
+            this->_alloc.deallocate(found, 1);
+            found = nullptr;
+            this->_tnull->_prev = this->maximum(this->_root);
+            this->_size--;
+
+        }
+
+        void fix_delete(node_ptr x) {
             node_ptr w;
             while (x != this->_root && x->_color == BLACK) {
 
@@ -188,6 +243,12 @@ namespace ft {
             return this->maximum(this->_root);
         }
 
+        size_t max_size() const{
+            return this->p_alloc.max_size();
+        }
+
+        /*--------------- Serach functions ---------------------------*/
+
         mapped_type& search_key(const key_type& key) const {
 
             node_ptr root = this->_root;
@@ -195,6 +256,20 @@ namespace ft {
                 if (root->_data->first == key)
                     return  root->_data->second;
                 if (key > root->_data->first)
+                    root = root->_right_c;
+                else
+                    root = root->_left_c;
+            }
+            throw std::out_of_range("key out of range");
+        }
+
+        mapped_type search_key_set(const key_type& key) const {
+
+            node_ptr root = this->_root;
+            while (root && root != this->_tnull){
+                if (*(root->_data) == key)
+                    return  *(root->_data);
+                if (key > *(root->_data))
                     root = root->_right_c;
                 else
                     root = root->_left_c;
@@ -216,10 +291,34 @@ namespace ft {
             return this->end();
         }
 
+        node_ptr search_node(const key_type& key) const {
 
-        size_t max_size(){
-            return this->p_alloc.max_size();
+            node_ptr root = this->_root;
+            while (root && root != this->_tnull){
+                if (root->_data->first == key)
+                    return  root;
+                if (key > root->_data->first)
+                    root = root->_right_c;
+                else
+                    root = root->_left_c;
+            }
+            return this->_tnull;
         }
+
+        iter search_set(const key_type& key) const {
+
+            node_ptr root = this->_root;
+            while (root && root != this->_tnull){
+                if (*(root->_data) == key)
+                    return  iter(root);
+                if (key > *(root->_data))
+                    root = root->_right_c;
+                else
+                    root = root->_left_c;
+            }
+            return this->end();
+        }
+
         /*-------------------- Iterators --------------------------*/
 
 
@@ -257,11 +356,20 @@ namespace ft {
 
         template<class Iter>
         void insert_range(Iter begin, Iter end){
-            Iter tmp = begin;
-            for(; tmp != end; tmp++)
-                this->insert(*tmp);
+            for(; begin != end; begin++)
+                this->RBT_insert(*begin);
         }
 
+        template<class Iter>
+        void delete_range(Iter begin, Iter end){
+            Iter tmp = begin;
+            while ( begin != end)
+            {
+                tmp++;
+                this->delete_elem(begin->first);
+                begin = tmp;
+            }
+        }
         /*---------------------- Operators Overloads -------------------*/
 
         RedBlackTree& operator=(const RedBlackTree& other){
