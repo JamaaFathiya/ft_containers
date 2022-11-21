@@ -2,14 +2,17 @@
 #include "BST.hpp"
 #include <map>
 #include <exception>
-#include "../utility/ft_iterator.hpp"
 #include "../utility/ft_pair.hpp"
+#include "../utility/ft_iterator_traits.hpp"
 
 
 namespace ft {
 
     template <class T, class NodePtr>
     class tree_iter;
+
+    template<class iter>
+    struct rev_tree_iter;
 
     template<typename T, typename key_t , typename mapped_t, class Compare , class Allocator = std::allocator<T> >
     class RedBlackTree : public BST<T, Compare, Allocator> {
@@ -26,8 +29,8 @@ namespace ft {
 
         typedef tree_iter<T, node_ptr>              iter;
         typedef tree_iter<const T, node_ptr>        const_iter;
-        typedef ft::reverse_iterator<iter>          rev_iter;
-        typedef ft::reverse_iterator<const_iter>    const_rev_iter;
+        typedef ft::rev_tree_iter<iter>          rev_iter;
+        typedef ft::rev_tree_iter<const_iter>    const_rev_iter;
 
 
         RedBlackTree(const cmp_func& cmp): BST(cmp){}
@@ -150,6 +153,7 @@ namespace ft {
                         this->Transplant(tmp, tmp->_right_c);
                         tmp->_right_c = found->_right_c;
                         tmp->_right_c->_parent = tmp;
+                        x->_parent = tmp->_parent; //remember
                     }
                     else
                         x->_parent = tmp;
@@ -338,17 +342,17 @@ namespace ft {
             return const_iter(this->_tnull);
         }
 
-        const ft::reverse_iterator<iter> rbegin() const{
+        const ft::rev_tree_iter<iter> rbegin() const{
             return rev_iter(this->end());
         }
-        const ft::reverse_iterator<iter> rend() const{
+        const ft::rev_tree_iter<iter> rend() const{
             return rev_iter(this->begin());
         }
 
-        const ft::reverse_iterator<const_iter> crbegin() const{
+        const ft::rev_tree_iter<const_iter> crbegin() const{
             return const_rev_iter(this->end());
         }
-        const ft::reverse_iterator<const_iter> crend() const{
+        const ft::rev_tree_iter<const_iter> crend() const{
             return const_rev_iter(this->begin());
         }
 
@@ -443,6 +447,10 @@ namespace ft {
             return ((_ptr->_data));
         }
 
+        pointer base() const{
+            return this->_ptr;
+        }
+
         bool operator!=(const tree_iter& it){
             return (this->_ptr != it._ptr);
         }
@@ -452,6 +460,71 @@ namespace ft {
         }
     };
 
+    template<class iter>
+    struct rev_tree_iter {
 
+    public:
+        typedef iter iterator_type;
+        typedef typename ft::iterator_traits<iter>::value_type value_type;
+        typedef typename ft::iterator_traits<iter>::difference_type difference_type;
+        typedef typename ft::iterator_traits<iter>::pointer pointer;
+        typedef typename ft::iterator_traits<iter>::reference reference;
+        typedef typename ft::iterator_traits<iter>::iterator_category iterator_category;
+        typedef typename iter::type_pointer type_pointer;
+
+    private:
+        iter _ptr;
+
+    public:
+
+        rev_tree_iter(iter ptr) : _ptr(ptr) {};
+
+        rev_tree_iter() : _ptr(nullptr) {};
+
+        rev_tree_iter &operator=(const rev_tree_iter<iter> &itr) {
+            if (this != &itr)
+                this->_ptr = itr._ptr;
+            return *this;
+        }
+
+        rev_tree_iter &operator++() {
+            --(this->_ptr);
+            return *this;
+        }
+
+        rev_tree_iter operator++(int) {
+            rev_tree_iter _tmp(this->_ptr);
+            --(this->_ptr);
+            return _tmp;
+        }
+
+        rev_tree_iter &operator--() {
+            ++(this->_ptr);
+            return *this;
+        }
+
+        rev_tree_iter operator--(int) {
+            rev_tree_iter _tmp(this->_ptr);
+            ++(this->_ptr);
+            return _tmp;
+        }
+
+        reference operator*() const {
+            iter tmp = _ptr;
+            return (*(--tmp));
+        }
+
+        type_pointer operator->() const {
+            return (_ptr.base())->_data;
+        }
+
+        bool operator!=(const rev_tree_iter& it){
+            return (this->_ptr != it._ptr);
+        }
+
+        bool operator==(const rev_tree_iter& it){
+            return (this->_ptr == it._ptr);
+        }
+    };
 
 };
