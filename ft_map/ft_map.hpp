@@ -131,7 +131,11 @@ namespace ft {
         }
 
         mapped_type &operator[](const Key &key) {
-            return (_tree.search_key(key));
+            iterator tmp = find(key);
+            if (tmp != end())
+                return (_tree.search_key(key));
+            ft::pair<iterator, bool> n = insert(ft::make_pair(key, mapped_type()));
+            return n.first->second;
         }
 
         /*---------------------- Capacity -------------------------*/
