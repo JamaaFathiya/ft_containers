@@ -70,6 +70,8 @@ namespace ft
             this->_tnull = _alloc.allocate(1);
             _alloc.construct(this->_tnull, _node());
             this->_tnull->_right_c = nullptr;
+            this->_tnull->_data = p_alloc.allocate(1);
+            p_alloc.construct(this->_tnull->_data, value_type());
             this->_tnull->_prev = nullptr;
             this->_tnull->_next = nullptr;
             this->_tnull->_left_c = nullptr;
@@ -122,8 +124,10 @@ namespace ft
             tmp->_prev = predecessor(tmp);
             tmp->_next = successor(tmp);
             tmp->_prev->_next = tmp;
-            this->_tnull->_prev = maximum(this->_root);
+            tmp->_next->_prev = tmp;
             this->_size++;
+            this->_tnull->_prev = maximum(this->_root);
+            this->_tnull->_next = nullptr;
             return tmp;
         }
 
@@ -156,8 +160,8 @@ namespace ft
         void inorder_traverse(node_ptr root) {
             if(root != nullptr && root != _tnull){
                 inorder_traverse(root->_left_c);
-                std::cout << "data: "<< root->_data.first << std::endl;
-                std::cout << "parent data " << root->_parent->_data.first << std::endl;
+                std::cout << "data: "<< root->_data->first << std::endl;
+                std::cout << "parent data " << root->_parent->_data->first << std::endl;
                 std::cout << "color " << (root->_color == RED ? "RED": "BLACK") << std::endl;
                 std::cout << "\n";
                 inorder_traverse(root->_right_c);
