@@ -120,10 +120,6 @@ namespace ft {
             return _tree.crend();
         }
 
-        void insert(value_type n) {
-            _tree.insert(n);
-        }
-
         /*------------------------- Element Access ---------------------*/
 
         mapped_type &at(const key_type &key) {
@@ -229,7 +225,55 @@ namespace ft {
         }
 
 
+        /*------------------ Modifiers --------------------*/
+
+        void clear(){
+            erase(begin(), end());
+        }
+
+        ft::pair<iterator, bool> insert( const value_type& value ){
+            iterator tmp = _tree.search(value.first);
+            if (tmp == _tree.end())
+                return  ft::make_pair(_tree.RBT_insert(value), true);
+            return ft::make_pair(tmp, false);
+        }
+
+        iterator insert (iterator position, const value_type& val){
+
+            iterator it = find(val.first);
+            if (it == end()){
+               _tree.RBT_insert(val);
+                return position;
+            }
+            return it;
+        }
+
+        template< class InputIt >
+        void insert( InputIt first, InputIt last ){
+            _tree.template insert_range(first, last);
+        }
+
+        void erase( iterator pos ){
+            _tree.delete_elem(pos->first);
+        }
+
+        size_type erase (const key_type& k){
+            if (find(k) != end()){
+                _tree.delete_elem(k);
+                return 1;
+            }
+            return 0;
+        }
+
+        void erase (iterator first, iterator last){
+            _tree.delete_range(first, last);
+        }
+
+        void print(){
+            _tree.inorder_traverse(_tree.root());
+        }
     };
+
 
     template< class Key, class T, class Compare, class Alloc >
     bool operator==( const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs )
