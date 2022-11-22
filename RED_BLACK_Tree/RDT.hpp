@@ -171,6 +171,59 @@ namespace ft {
             found = nullptr;
             this->_tnull->_prev = this->maximum(this->_root);
             this->_size--;
+        }
+
+        void delete_elem_set(key_type data) {
+            node_ptr found = this->search_node_set(data);
+            if (found) {
+
+                found->_prev->_next = found->_next;
+                found->_next->_prev = found->_prev;
+                color origin_color;
+                node_ptr x;
+                origin_color = found->_color;
+
+                if (found->_left_c == this->_tnull) // if the node has only the right child we replace it by that child
+                {
+                    x = found->_right_c;
+                    x->_parent = found->_parent;
+                    this->Transplant(found, found->_right_c);
+                } else if (found->_right_c == this->_tnull) // if the node has only the left child
+                {
+                    x = found->_left_c;
+                    x->_parent = found->_parent;
+                    this->Transplant(found, found->_left_c);
+                } else {
+                    node_ptr tmp = this->minimum(
+                            found->_right_c); // if the node has both children we replace it by the min of the left subtree
+                    origin_color = tmp->_color;
+
+                    x = tmp->_right_c;
+//                    if (x->_parent != this->_tnull)
+//                        x->_parent = tmp->_parent;
+                    if (tmp != found->_right_c) {
+                        this->Transplant(tmp, tmp->_right_c);
+                        tmp->_right_c = found->_right_c;
+                        tmp->_right_c->_parent = tmp;
+                        x->_parent = tmp->_parent; //remember
+                    }
+                    else
+                        x->_parent = tmp;
+
+                    this->Transplant(found, tmp);
+                    tmp->_left_c = found->_left_c;
+                    tmp->_left_c->_parent = tmp;
+
+                    tmp->_color = found->_color;
+                }
+                if (origin_color == BLACK)
+                    fix_delete(x);
+            }
+            this->_alloc.destroy(found);
+            this->_alloc.deallocate(found, 1);
+            found = nullptr;
+            this->_tnull->_prev = this->maximum(this->_root);
+            this->_size--;
 
         }
 
@@ -294,22 +347,7 @@ namespace ft {
             return this->end();
         }
 
-        node_ptr search_node(const key_type& key) const {
-
-            node_ptr root = this->_root;
-            while (root && root != this->_tnull){
-                if (root->_data->first == key)
-                    return  root;
-                if (key > root->_data->first)
-                    root = root->_right_c;
-                else
-                    root = root->_left_c;
-            }
-            return this->_tnull;
-        }
-
         iter search_set(const key_type& key) const {
-
             node_ptr root = this->_root;
             while (root && root != this->_tnull){
                 if (*(root->_data) == key)
@@ -322,6 +360,32 @@ namespace ft {
             return this->end();
         }
 
+        node_ptr search_node(const key_type& key) const {
+            node_ptr root = this->_root;
+            while (root && root != this->_tnull){
+                if (root->_data->first == key)
+                    return  root;
+                if (key > root->_data->first)
+                    root = root->_right_c;
+                else
+                    root = root->_left_c;
+            }
+            return this->_tnull;
+        }
+
+        node_ptr search_node_set(const key_type& key) const {
+
+            node_ptr root = this->_root;
+            while (root && root != this->_tnull){
+                if (*root->_data == key)
+                    return  root;
+                if (key > *root->_data)
+                    root = root->_right_c;
+                else
+                    root = root->_left_c;
+            }
+            return this->_tnull;
+        }
         /*-------------------- Iterators --------------------------*/
 
 
@@ -374,6 +438,16 @@ namespace ft {
             }
         }
 
+        template<class Iter>
+        void delete_range_set(Iter begin, Iter end){
+            Iter tmp = begin;
+            while ( begin != end)
+            {
+                tmp++;
+                this->delete_elem_set(*begin);
+                begin = tmp;
+            }
+        }
         /*---------------------- Operators Overloads -------------------*/
 
         RedBlackTree& operator=(const RedBlackTree& other){
