@@ -43,13 +43,11 @@ namespace ft{
 
         template<class InputIt>
         set(InputIt first, InputIt last, const key_compare &comp = key_compare(),
-        const Allocator &alloc = allocator_type()): _tree(comp) {
-            _alloc = alloc;
-            _cmp = comp;
+        const Allocator &alloc = allocator_type()): _tree(comp),_cmp(comp), _alloc(alloc) {
             _tree.template insert_range(first, last);
         }
 
-        set(const set &other) : _tree(other._cmp) {
+        set(const set &other) : _tree(other._cmp),_cmp( other._cmp), _alloc(other._alloc) {
             this->_tree = other._tree;
         }
 
@@ -102,16 +100,6 @@ namespace ft{
             return _tree.crend();
         }
 
-        void insert(value_type n) {
-            _tree.insert(n);
-        }
-
-        /*------------------------- Element Access ---------------------*/
-
-        value_type &operator[](const Key &key) {
-            return (_tree.search_key(key));
-        }
-
         /*---------------------- Capacity -------------------------*/
 
         bool empty() const {
@@ -155,7 +143,6 @@ namespace ft{
             return ft::make_pair(lower_bound(key), upper_bound(key));
         }
 
-//
         iterator lower_bound(const Key &key) {
             iterator it = _tree.begin();
             for (; it != _tree.end(); it++) {
@@ -165,7 +152,6 @@ namespace ft{
             return _tree.end();
         }
 
-//
         const_iterator lower_bound(const Key &key) const {
             iterator it = _tree.begin();
             for (; it != _tree.end(); it++) {
@@ -202,6 +188,56 @@ namespace ft{
             return _cmp;
         }
 
+        /*------------------ Modifiers --------------------*/
+
+        void clear(){
+            erase(begin(), end());
+        }
+
+        ft::pair<iterator, bool> insert( const value_type& value ){
+            iterator tmp = _tree.search_set(value);
+            if (tmp == _tree.end())
+                return  ft::make_pair(_tree.RBT_insert(value), true);
+            return ft::make_pair(tmp, false);
+        }
+
+        iterator insert (iterator position, const value_type& val){
+
+            iterator it = find(val);
+            if (it == end()){
+                _tree.RBT_insert(val);
+                return position;
+            }
+            return it;
+        }
+
+        template< class InputIt >
+        void insert( InputIt first, InputIt last ){
+            _tree.template insert_range(first, last);
+        }
+
+        void erase( iterator pos ){
+            _tree.delete_elem_set(*pos);
+        }
+
+        size_type erase (const key_type& k){
+            if (find(k) != end()){
+                _tree.delete_elem_set(k);
+                return 1;
+            }
+            return 0;
+        }
+
+        void erase (iterator first, iterator last){
+            _tree.delete_range_set(first, last);
+        }
+
+        void swap (set& x){
+            set tmp(x);
+
+            x = *this;
+            *this = tmp;
+        }
     };
 
     template< class Key, class Compare, class Alloc >
