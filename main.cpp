@@ -1,10 +1,5 @@
-#include "ft_stack/ft_stack.hpp"
-#include "ft_vector/ft_vector.hpp"
-#include <vector>
 #include <iostream>
-#include <type_traits>
 # include "tester/tester.hpp"
-#include <stack>
 
 bool printBoolResult(std::fstream& fs, bool stl_bool, bool ft_bool)
 {
@@ -16,20 +11,15 @@ bool printBoolResult(std::fstream& fs, bool stl_bool, bool ft_bool)
 }
 
 
-//int main()
-//{
-//    test_vector();
-//    std::cout << "\n";
-//    // test_list();
-//    // std::cout << "\n";
-//    // test_map();
-//    // std::cout << "\n";
-//    // test_deque();
-//    // std::cout << "\n";
-//    test_stack();
-//    std::cout << "\n";
-//    // test_queue();
-//}
+int main()
+{
+    test_vector();
+    std::cout << "\n";
+     test_map();
+     std::cout << "\n";
+    test_stack();
+    std::cout << "\n";
+}
 
 //int main(){
 //    int range_array[] = {47, 152, -325, 9, 14444};
@@ -62,45 +52,57 @@ bool printBoolResult(std::fstream& fs, bool stl_bool, bool ft_bool)
 //    return 0;
 //}
 //
-#include "RED_BLACK_Tree/RDT.hpp"
-#include "utility/ft_pair.hpp"
-#include "ft_map/ft_map.hpp"
-
-
-int main() {
-
-    std::map<int, int> s;
-    s.insert(std::pair<int,int>(1,2));
-    s.insert(std::pair<int,int>(2,2));
-    s.insert(std::pair<int,int>(3,2));
-    s.insert(std::pair<int,int>(4,2));
-    s.insert(std::pair<int,int>(5,2));
-
-    ft::map<int, int> m;
-
-
-    m.insert(ft::pair<int,int>(1,2));
-    m.insert(ft::pair<int,int>(2,2));
-    m.insert(ft::pair<int,int>(3,2));
-
-    m.insert(ft::pair<int,int>(4,2));
-
-    m.insert(ft::pair<int,int>(5,2));
-
-//    ft::map<int, int> n(m);
-//    n = m;
+//#include "RED_BLACK_Tree/RDT.hpp"
+//#include "utility/ft_pair.hpp"
+//#include "ft_map/ft_map.hpp"
 //
-    ft::map<int, int>::const_iterator  it;
-//    it = m.rbegin();
+//
+//int main() {
+//
+//    std::map<int, int> s;
+//    s.insert(std::pair<int,int>(-1,2));
+//    s.insert(std::pair<int,int>(-2,2));
+//    s.insert(std::pair<int,int>(3,2));
+//    s.insert(std::pair<int,int>(4,2));
+//    s.insert(std::pair<int,int>(5,2));
+//
+//    ft::map<int, int> m;
+//
+////    -854, 1, 965, -9, 755
+//    m.insert(ft::pair<int,int>(-845,2));
+//    m.insert(ft::pair<int,int>(1,2));
+//    m.insert(ft::pair<int,int>(965,2));
+//
+//    m.insert(ft::pair<int,int>(-9,2));
+//
+//    m.insert(ft::pair<int,int>(755,2));
+//
+////    std::cout << m.begin()->first << std::endl;
+//    ft::map<int, int>::reverse_iterator  it = m.rbegin();
+////    ft::map<int, int>::iterator  it1 = m.end();
+//
+////    m.print();
 ////    it++;
-//for(; it != m.rend(); it++)
-//    std::cout << (*it).first << std::endl;
-
-//    std::cout << m[1] << std::endl;
-//    it = (m.lower_bound(1));
-
-    ft::pair<ft::map<int, int>::const_iterator, ft::map<int, int>::const_iterator>  p = m.equal_range(3);
-    std::cout << (p.first)->first << std::endl;
-
-    return 0;
-}
+////    it++;
+////    it1--;
+////    m.erase(it, it1);
+//
+////    ft::map<int, int> n(m);
+////    n = m;
+////
+////    ft::map<int, int>::iterator  it;
+////    it = m.begin();
+//////    it++;
+////for(; it != m.rend(); it++)
+//    std::cout << it->first << std::endl;
+//
+////    std::cout << m[1] << std::endl;
+////    it = (m.lower_bound(1));
+//
+////m.insert(it, ft::make_pair(6,6));
+//
+////    ft::pair<ft::map<int, int>::const_iterator, ft::map<int, int>::const_iterator>  p = m.equal_range(3);
+////    std::cout << (p.first)->first << std::endl;
+//
+//    return 0;
+//}
