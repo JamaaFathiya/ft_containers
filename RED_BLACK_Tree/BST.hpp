@@ -183,6 +183,7 @@ namespace ft
             _alloc.destroy(_tnull);
             _alloc.deallocate(_tnull, 1);
             _tnull = nullptr;
+            _size = 0;
         }
 
         node_ptr maximum(node_ptr node) const { //max
