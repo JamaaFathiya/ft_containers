@@ -268,6 +268,12 @@ namespace ft {
             _tree.delete_range(first, last);
         }
 
+        void swap (map& x){
+            map tmp(x);
+
+            x = *this;
+            *this = tmp;
+        }
     };
 
 
