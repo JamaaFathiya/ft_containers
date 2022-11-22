@@ -2,8 +2,6 @@
 #include <iostream>
 #include <functional>
 #include <memory>
-#include <__tree>
-#include <map>
 
 //# define BOLD_RED       "\033[1;31mRED\e[0m"
 //# define BLCK			"\e[33;2;37mBLACK\e[0m"
@@ -44,23 +42,24 @@ namespace ft
             color       _color;
 
         } node;
+
         /*Since rebind is a member template of Allocator and Allocator is a template argument,
         the "rebind"  becomes a dependent name. To indicate that a dependent name is a template, it needs to be prefixed by template.
         Without the template keyword the < would be considered to be the less-than operator.
         */
         typedef Allocator pair_alloc_type;
-        typedef typename Allocator::template rebind<_node>::other node_alloc_type;
-        typedef _node* node_ptr;
-        typedef _node& node_reference;
-        typedef Compare compare_func;
+        typedef typename Allocator::template rebind<_node>::other   node_alloc_type;
+        typedef _node*                                              node_ptr;
+        typedef _node&                                              node_reference;
+        typedef Compare                                             compare_func;
 
     protected:
         pair_alloc_type     p_alloc;
-        node_alloc_type      _alloc;
-        compare_func    _cmp;
-        node_ptr        _root;
-        node_ptr        _tnull;
-        size_type       _size;
+        node_alloc_type     _alloc;
+        compare_func        _cmp;
+        node_ptr            _root;
+        node_ptr            _tnull;
+        size_type           _size;
 
 
     public:
@@ -155,7 +154,6 @@ namespace ft
         bool is_leaf(node_ptr node) {
             return (node->_right_c == _tnull) && (node->_left_c == _tnull);
         }
-
 
         void inorder_traverse(node_ptr root) {
             if(root != nullptr && root != _tnull){
