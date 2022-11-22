@@ -1,13 +1,19 @@
 NAME	= ft_containers
-CC		= c++ -Wall -Wextra -Werror -std=c++98 -g # -fsanitize=address
+CC		= c++ -Wall -Wextra -Werror -std=c++98 -g  -fsanitize=address
 RM		= rm -rf
 
 VECTOR_FILES = tester/tester_vector
 STACK_FILES  = tester/tester_stack
 MAP_FILES    = tester/tester_map
 SET_FILES	 = tester/tester_set
+TEST_DIRS	 = $(addprefix tester/, maps_output sets_output stacks_output vectors_output)
 
-FILES	=  $(VECTOR_FILES) $(STACK_FILES)  $(SET_FILES) main # $(MAP_FILES)
+ifeq ($(bonus), 1)
+FILES		 = main_bonus $(SET_FILES)
+else
+FILES		 = main  $(MAP_FILES)  $(VECTOR_FILES) $(STACK_FILES)
+endif
+
 
 SRC		= $(FILES:=.cpp)
 OBJ		= $(FILES:=.o)
@@ -36,18 +42,18 @@ END		= \e[0m
 
 all: $(NAME)
 
-$(NAME): $(OBJ) $(INCLUDES)
+$(NAME): $(OBJ) $(INCLUDES) $(utility)
 	@$(CC)  $(OBJ) -o $(NAME)
 	@printf " $(GREEN) - SUCCESS [ ✅ ] $(END)\n"
 
-%.o: %.cpp $(INCLUDES)	
+%.o: %.cpp $(INCLUDES)	$(utility)
 	@printf " $(GRAY)   - Compiling $< ⏳ ... $(END)"
 	@$(CC) -c $< -o $@
 	@printf " $(GRAY) [ ✅ ] $(END)\n"
 
 clean:
 	@printf " $(YELLOW) - OBJ FILES REMOVED [ ✅ ] $(END)\n"
-	@$(RM) $(OBJ)
+	@$(RM) $(OBJ) $(TEST_DIRS) tester/tester_set.o main_bonus.o
 
 fclean: clean
 	@printf " $(YELLOW) - EXECUTABLE REMOVED [ ✅ ] $(END)\n"
