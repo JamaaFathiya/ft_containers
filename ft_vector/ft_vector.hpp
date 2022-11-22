@@ -40,7 +40,7 @@ namespace ft
         void construct_all(pointer dest, pointer src, size_type n){
             if (dest && src){
                 for(size_type i=0; i<n; i++)
-                    _alloc.construct(&dest[i], &src[i]);
+                    _alloc.construct(&dest[i], src[i]);
             }
         }
 
@@ -56,11 +56,10 @@ namespace ft
 
         void extand(int new_capacity){
             pointer tmp = _alloc.allocate(new_capacity);
-            construct_default(tmp, new_capacity);
-            std::memcpy(tmp, this->_da, this->_size * sizeof(value_type));
-            if (this->_capacity != 0)
+            construct_all(tmp, this->_da, _size);
+            if (this->_capacity > 0)
             {
-               destroy_all(this->_da, this->_capacity);
+               destroy_all(this->_da, this->_size);
              _alloc.deallocate(this->_da, this->_capacity);
             }
             this->_da = tmp;
@@ -168,9 +167,10 @@ namespace ft
         ~vector(){
             if (this->_da && this->_capacity)
             {
-                destroy_all(this->_da, this->_capacity);
+                destroy_all(this->_da, this->_size);
                 _alloc.deallocate(this->_da, this->_capacity);
             }
+
         }
         
         /*---------------------------- Iterators -------------------------*/
@@ -217,7 +217,7 @@ namespace ft
             {
                 if (this->_capacity != 0)
                 {
-                    this->destroy_all(this->_da, this->_capacity);
+                    this->destroy_all(this->_da, this->_size);
                     this->_alloc.deallocate(this->_da, this->_capacity);
                 }
                 this->_da = this->_alloc.allocate(count);
@@ -256,12 +256,12 @@ namespace ft
             if (this->_capacity == 0)
             {
                 this->_da = _alloc.allocate(1);
-                _alloc.construct(this->_da, value_type());
                 this->_capacity++;
             }
             else if (this->_size >= this->_capacity)
                 this->extand(this->_capacity * 2);
-            this->_da[_size++] = val;
+            _alloc.construct(this->_da + _size, val);
+            _size++;
         }
 
         void pop_back(){
@@ -356,7 +356,7 @@ namespace ft
             size_type index = position - this->begin();
             int count = last - first;
 
-            if (position < this->begin() || index >= this->capacity())
+            if (position < this->begin() || index > this->capacity())
                 return ;
             //new_size is the old size + number of element but jif the position surpasses the end() the cases skipped are add to count
             size_type new_size =  (position > this->end()) ? this->_size + count + (position - this->end()) : this->_size + count;
@@ -465,17 +465,29 @@ namespace ft
             return allocator_type().max_size();
         }
 
-        void resize (size_type n, value_type val = value_type()){ //changes the size of the vector to n (either by adding elements of destroying)
-            if (n >= this->_size)
-            {
-                if (n > this->_capacity)
-                    this->extand(n);
-                for(size_type i=this->_size; i < n - this->_size; i++)
-                    push_back(val);
+        void resize (size_type n, value_type val = value_type()) { //changes the size of the vector to n (either by adding elements or destroying
+            if (n < _size) {
+                while (n < _size)
+                    _alloc.destroy(_da + _size--);
+            } else if (n > _size) {
+                if (n > _capacity) {
+                    pointer tmp_vec = _alloc.allocate(n);
+                    for (size_type i(0); i < n; ++i) {
+                        if (i < _size) {
+                            _alloc.construct(tmp_vec + i, _da[i]);
+                            _alloc.destroy(_da + i);
+                        } else {
+                            _alloc.construct(tmp_vec + i, val);
+                        }
+                    }
+                    _alloc.deallocate(_da, _capacity);
+                    _capacity = _size = n;
+                    _da = tmp_vec;
+                } else {
+                    for (; _size < n; ++_size)
+                        _alloc.construct(_da + _size, val);
+                }
             }
-            else
-                destroy_all(this->_da + n, this->_size - n);
-            this->_size = n;
         }
 
         size_type capacity() const{ // returns the capacity of the vector
@@ -560,7 +572,6 @@ namespace ft
         allocator_type get_allocator() const{
             return this->_alloc;
         }
-
         
     };
 
