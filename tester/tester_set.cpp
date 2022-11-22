@@ -107,7 +107,7 @@ void test_set()
     std::fstream fs;
 
     /* Constructors */
-    std::cout << "Constructors : ";
+    std::cout << "Constructors\t: ";
 
     /* Default constructor */
     {
@@ -252,7 +252,7 @@ void test_set()
     }
 
     std::cout << std::endl;
-    std::cout << "Iterators : ";
+    std::cout << "Iterators\t: ";
 
     /* Begin */
     {
@@ -634,7 +634,7 @@ void test_set()
     }
 
     std::cout << std::endl;
-    std::cout << "Capacity : ";
+    std::cout << "Capacity\t: ";
 
     /* Empty true */
     {
@@ -757,377 +757,374 @@ void test_set()
     }
 
     std::cout << std::endl;
-    std::cout << "Element access : ";
+    std::cout << "Modifier\t: ";
 
-//    std::cout << std::endl;
-//    std::cout << "Modifier : ";
-//
-//    /* Insert single */
-//    {
-//        std::set<int> stl_set;
-//        ft::set<int> ft_set;
-//
-//        stl_set.insert(42);
-//        ft_set.insert(42);
-//
-//        fs.open("./tester/set_output/insert_single", std::fstream::in | std::fstream::out | std::fstream::trunc);
-//        std::cout << ((printSetAttributes(fs, stl_set, ft_set) == true) ? OK : NOP );
-//
-//        fs << "\nCode executed:\n";
-//        fs << "¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\n";
-//        fs << "ft::set<int> ft_set;\n";
-//        fs << "ft_set.insert(42, \"La famille\"));\n";
-//        fs << "\nCompared with:\n";
-//        fs << "¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\n";
-//        fs << "std::set<int> stl_set;\n";
-//        fs << "stl_set.insert(42, \"La famlle\"));\n";
-//        fs.close();
-//    }
-//
-//    /* Insert hint */
-//    {
-//        const int range_int[] = {584, 96, 21, -54, 36};
-//        const std::string range_str[] = {"One", "Two", "Three", "Four", "Five"};
-//
-//        std::set<int> stl_set;
-//        ft::set<int> ft_set;
-//
-//        for (int i = 0; i < 5; i++)
-//        {
-//            stl_set.insert(range_int[i]);
-//            ft_set.insert(range_int[i]);
-//        }
-//
-//        fs.open("./tester/set_output/insert_hint", std::fstream::in | std::fstream::out | std::fstream::trunc);
-//        printSetAttributes(fs, stl_set, ft_set);
-//
-//        stl_set.insert(++(stl_set.begin()), 42, "Nice"))
-//        ft_set.insert(++(ft_set.begin()), 42, "Nice"));
-//
-//        std::cout << ((printSetAttributes(fs, stl_set, ft_set) == true) ? OK : NOP );
-//
-//        fs << "\nCode executed:\n";
-//        fs << "¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\n";
-//        fs << "const int range_int[] = {584, 96, 21, -54, 36};\n";
-//        fs << "const std::string range_str[] = {\"One\", \"Two\", \"Three\", \"Four\", \"Five\"};\n";
-//        fs << "ft::set<int> ft_set;\n";
-//        fs << "for (int i = 0; i < 5; i++)\n";
-//        fs << "    ft_set.insert(range_int[i]);\n";
-//        fs << "ft_set.insert(++(ft_set.begin()), 42, \"Nice\"));\n";
-//        fs << "\nCompared with:\n";
-//        fs << "¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\n";
-//        fs << "const int range_int[] = {584, 96, 21, -54, 36};\n";
-//        fs << "const std::string range_str[] = {\"One\", \"Two\", \"Three\", \"Four\", \"Five\"};\n";
-//        fs << "std::set<int> stl_set;\n";
-//        fs << "for (int i = 0; i < 5; i++)\n";
-//        fs << "    stl_set.insert(range_int[i]);\n";
-//        fs << "stl_set.insert(++(stl_set.begin()), 42, \"Nice\");\n";
-//        fs.close();
-//    }
-//
-//    /* Insert Range */
-//    {
-//        const int range_int[] = {754, -985, 58, 999, 5};
-//        const std::string range_str[] = {"One", "Two", "Three", "Four", "Five"};
-//
-//        std::set<int> stl_set_one;
-//        ft::set<int> ft_set_one;
-//        std::set<int> stl_set_two;
-//        ft::set<int> ft_set_two;
-//
-//        for (int i = 0; i < 5; i++)
-//        {
-//            stl_set_one.insert(range_int[i]);
-//            ft_set_one.insert(range_int[i]);
-//            stl_set_two.insert(range_int[i]+ 266, range_str[i] + "_two"));
-//            ft_set_two.insert(range_int[i] + 266, range_str[i] + "_two"));
-//        }
-//
-//        fs.open("./tester/set_output/insert_range", std::fstream::in | std::fstream::out | std::fstream::trunc);
-//        printSetAttributes(fs, stl_set_one, ft_set_one);
-//        printSetAttributes(fs, stl_set_two, ft_set_two);
-//
-//        stl_set_one.insert(stl_set_two.begin(), stl_set_two.end());
-//        ft_set_one.insert(ft_set_two.begin(), ft_set_two.end());
-//
-//        std::cout << ((printSetAttributes(fs, stl_set_one, ft_set_one) == true) ? OK : NOP );
-//
-//        fs << "\nCode executed:\n";
-//        fs << "¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\n";
-//        fs << "const int range_int[] = {754, -985, 58, 999, 5};\n";
-//        fs << "const std::string range_str[] = {\"One\", \"Two\", \"Three\", \"Four\", \"Five\"};\n";
-//        fs << "ft::set<int> ft_set_one;\n";
-//        fs << "ft::set<int> ft_set_two;\n";
-//        fs << "for (int i = 0; i < 5; i++)\n";
-//        fs << "{\n";
-//        fs << "	ft_set_one.insert(range_int[i]);\n";
-//        fs << "	ft_set_two.insert(range_int[i] + 266, range_str[i] + \"_two\"));\n";
-//        fs << "}\n";
-//        fs << "Sending output...\n";
-//        fs << "ft_set_one.insert(ft_set_two.begin(), ft_set_two.end());\n";
-//        fs << "\nCompared with:\n";
-//        fs << "¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\n";
-//        fs << "const int range_int[] = {754, -985, 58, 999, 5};\n";
-//        fs << "const std::string range_str[] = {\"One\", \"Two\", \"Three\", \"Four\", \"Five\"};\n";
-//        fs << "std::set<int> stl_set_one;\n";
-//        fs << "std::set<int> stl_set_two;\n";
-//        fs << "for (int i = 0; i < 5; i++)\n";
-//        fs << "{\n";
-//        fs << "	stl_set_one.insert(range_int[i]);\n";
-//        fs << "	stl_set_two.insert(range_int[i]+ 266, range_str[i] + \"_two\"));\n";
-//        fs << "}\n";
-//        fs << "Sending output...\n";
-//        fs << "stl_set_one.insert(stl_set_two.begin(), stl_set_two.end());\n";
-//        fs.close();
-//
-//    }
-//
-//    /* Erase single */
-//    {
-//        const int range_int[] = {-9, -84, -77, 24, 56};
-//        const std::string range_str[] = {"One", "Two", "Three", "Four", "Five"};
-//
-//        std::set<int> stl_set;
-//        ft::set<int> ft_set;
-//
-//        for (int i = 0; i < 5; i++)
-//        {
-//            stl_set.insert(range_int[i]);
-//            ft_set.insert(range_int[i]);
-//        }
-//
-//        fs.open("./tester/set_output/erase_single", std::fstream::in | std::fstream::out | std::fstream::trunc);
-//        printSetAttributes(fs, stl_set, ft_set);
-//
-//        stl_set.erase(stl_set.begin());
-//        ft_set.erase(ft_set.begin());
-//
-//        std::cout << ((printSetAttributes(fs, stl_set, ft_set) == true) ? OK : NOP );
-//
-//        fs << "\nCode executed:\n";
-//        fs << "¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\n";
-//        fs << "const int range_int[] = {-9, -84, -77, 24, 56};\n";
-//        fs << "const std::string range_str[] = {\"One\", \"Two\", \"Three\", \"Four\", \"Five\"};\n";
-//        fs << "ft::set<int> ft_set;\n";
-//        fs << "for (int i = 0; i < 5; i++)\n";
-//        fs << "    ft_set.insert(range_int[i]);\n";
-//        fs << "ft_set.erase(ft_set.begin());\n";
-//        fs << "\nCompared with:\n";
-//        fs << "¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\n";
-//        fs << "const int range_int[] = {-9, -84, -77, 24, 56};\n";
-//        fs << "const std::string range_str[] = {\"One\", \"Two\", \"Three\", \"Four\", \"Five\"};\n";
-//        fs << "std::set<int> stl_set;\n";
-//        fs << "for (int i = 0; i < 5; i++)\n";
-//        fs << "    stl_set.insert(range_int[i]);\n";
-//        fs << "stl_set.erase(stl_set.begin());\n";
-//        fs.close();
-//    }
-//
-//    /* Erase key */
-//    {
-//        const int range_int[] = {1452, 3651, -98, 84, 899};
-//        const std::string range_str[] = {"One", "Two", "Three", "Four", "Five"};
-//
-//        std::set<int> stl_set;
-//        ft::set<int> ft_set;
-//
-//        for (int i = 0; i < 5; i++)
-//        {
-//            stl_set.insert(range_int[i]);
-//            ft_set.insert(range_int[i]);
-//        }
-//
-//        fs.open("./tester/set_output/erase_key", std::fstream::in | std::fstream::out | std::fstream::trunc);
-//        printSetAttributes(fs, stl_set, ft_set);
-//
-//        stl_set.erase(-98);
-//        ft_set.erase(-98);
-//
-//        std::cout << ((printSetAttributes(fs, stl_set, ft_set) == true) ? OK : NOP );
-//
-//        fs << "\nCode executed:\n";
-//        fs << "¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\n";
-//        fs << "const int range_int[] = {1452, 3651, -98, 84, 899};\n";
-//        fs << "const std::string range_str[] = {\"One\", \"Two\", \"Three\", \"Four\", \"Five\"};\n";
-//        fs << "ft::set<int> ft_set;\n";
-//        fs << "for (int i = 0; i < 5; i++)\n";
-//        fs << "    ft_set.insert(range_int[i]);\n";
-//        fs << "ft_set.erase(-98);\n";
-//        fs << "\nCompared with:\n";
-//        fs << "¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\n";
-//        fs << "const int range_int[] = {1452, 3651, -98, 84, 899};\n";
-//        fs << "const std::string range_str[] = {\"One\", \"Two\", \"Three\", \"Four\", \"Five\"};\n";
-//        fs << "std::set<int> stl_set;\n";
-//        fs << "for (int i = 0; i < 5; i++)\n";
-//        fs << "    stl_set.insert(range_int[i]);\n";
-//        fs << "stl_set.erase(-98);\n";
-//        fs.close();
-//    }
-//
-//    /* Erase range */
-//    {
-//        const int range_int[] = {-854, 1, 965, -9, 755};
-//        const std::string range_str[] = {"One", "Two", "Three", "Four", "Five"};
-//
-//        std::set<int> stl_set;
-//        ft::set<int> ft_set;
-//
-//        for (int i = 0; i < 5; i++)
-//        {
-//            stl_set.insert(range_int[i]);
-//            ft_set.insert(range_int[i]);
-//        }
-//
-//        fs.open("./tester/set_output/erase_range", std::fstream::in | std::fstream::out | std::fstream::trunc);
-//        printSetAttributes(fs, stl_set, ft_set);
-//
-//        std::set<int>::iterator stl_it_beg = stl_set.begin();
-//        ft::set<int>::iterator ft_it_beg = ft_set.begin();
-//        std::set<int>::iterator stl_it_end = stl_set.end();
-//        ft::set<int>::iterator ft_it_end = ft_set.end();
-//
-//        for (int i = 0; i < 2; i++)
-//        {
-//            stl_it_beg++;
-//            ft_it_beg++;
-//        }
-//        stl_it_end--;
-//        ft_it_end--;
-//
-//        stl_set.erase(stl_it_beg, stl_it_end);
-//        ft_set.erase(ft_it_beg, ft_it_end);
-//
-//        std::cout << ((printSetAttributes(fs, stl_set, ft_set) == true) ? OK : NOP );
-//
-//        fs << "\nCode executed:\n";
-//        fs << "¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\n";
-//        fs << "const int range_int[] = {-854, 1, 965, -9, 755};\n";
-//        fs << "const std::string range_str[] = {\"One\", \"Two\", \"Three\", \"Four\", \"Five\"};\n";
-//        fs << "ft::set<int> ft_set;\n";
-//        fs << "for (int i = 0; i < 5; i++)\n";
-//        fs << "    ft_set.insert(range_int[i]);\n";
-//        fs << "ft::set<int>::iterator ft_it_beg = ft_set.begin();\n";
-//        fs << "ft::set<int>::iterator ft_it_end = ft_set.end();\n";
-//        fs << "for (int i = 0; i < 2; i++)\n";
-//        fs << "	ft_it_beg++;\n";
-//        fs << "ft_it_end--;\n";
-//        fs << "ft_set.erase(ft_it_beg, ft_it_end);\n";
-//        fs << "\nCompared with:\n";
-//        fs << "¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\n";
-//        fs << "const int range_int[] = {-854, 1, 965, -9, 755};\n";
-//        fs << "const std::string range_str[] = {\"One\", \"Two\", \"Three\", \"Four\", \"Five\"};\n";
-//        fs << "std::set<int> stl_set;\n";
-//        fs << "for (int i = 0; i < 5; i++)\n";
-//        fs << "    stl_set.insert(range_int[i]);\n";
-//        fs << "std::set<int>::iterator stl_it_beg = stl_set.begin();\n";
-//        fs << "std::set<int>::iterator stl_it_end = stl_set.end();\n";
-//        fs << "for (int i = 0; i < 2; i++)\n";
-//        fs << "	stl_it_beg++;\n";
-//        fs << "stl_it_end--;\n";
-//        fs << "stl_set.erase(stl_it_beg, stl_it_end);\n";
-//        fs.close();
-//    }
-//
-//    /* Swap */
-//    {
-//        const int range_int[] = {489, 851, 32, -98, 8};
-//        const std::string range_str[] = {"One", "Two", "Three", "Four", "Five"};
-//
-//        std::set<int> stl_set_one;
-//        ft::set<int> ft_set_one;
-//        std::set<int> stl_set_two;
-//        ft::set<int> ft_set_two;
-//
-//        for (int i = 0; i < 5; i++)
-//        {
-//            stl_set_one.insert(range_int[i]);
-//            ft_set_one.insert(range_int[i]);
-//            stl_set_two.insert(range_int[i]+ 1i]);
-//            ft_set_two.insert(range_int[i] + 1i]);
-//        }
-//
-//        fs.open("./tester/set_output/swap", std::fstream::in | std::fstream::out | std::fstream::trunc);
-//        printSetAttributes(fs, stl_set_one, ft_set_one);
-//        printSetAttributes(fs, stl_set_two, ft_set_two);
-//
-//        stl_set_one.swap(stl_set_two);
-//        ft_set_one.swap(ft_set_two);
-//
-//        std::cout << ((printSetAttributes(fs, stl_set_one, ft_set_one) == true) ? OK : NOP );
-//        std::cout << ((printSetAttributes(fs, stl_set_two, ft_set_two) == true) ? OK : NOP );
-//
-//        fs << "\nCode executed:\n";
-//        fs << "¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\n";
-//        fs << "const int range_int[] = {489, 851, 32, -98, 8};\n";
-//        fs << "const std::string range_str[] = {\"One\", \"Two\", \"Three\", \"Four\", \"Five\"};\n";
-//        fs << "ft::set<int> ft_set_one;\n";
-//        fs << "ft::set<int> ft_set_two;\n";
-//        fs << "for (int i = 0; i < 5; i++)\n";
-//        fs << "{\n";
-//        fs << "		ft_set_one.insert(range_int[i]);\n";
-//        fs << "		ft_set_two.insert(range_int[i] + 1i]);\n";
-//        fs << "}\n";
-//        fs << "Sending Output...\n";
-//        fs << "ft_set_one.swap(ft_set_two);\n";
-//        fs << "\nCompared with:\n";
-//        fs << "¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\n";
-//        fs << "const int range_int[] = {489, 851, 32, -98, 8};\n";
-//        fs << "const std::string range_str[] = {\"One\", \"Two\", \"Three\", \"Four\", \"Five\"};\n";
-//        fs << "std::set<int> stl_set_one;\n";
-//        fs << "std::set<int> stl_set_two;\n";
-//        fs << "for (int i = 0; i < 5; i++)\n";
-//        fs << "{\n";
-//        fs << "		stl_set_one.insert(range_int[i]);\n";
-//        fs << "		stl_set_two.insert(range_int[i]+ 1i]);\n";
-//        fs << "}\n";
-//        fs << "Sending Output...\n";
-//        fs << "stl_set_one.swap(stl_set_two);\n";
-//        fs.close();
-//    }
-//
-//    /* Clear */
-//    {
-//        const int range_int[] = {148, 9874, -987, 52, 96};
-//        const std::string range_str[] = {"One", "Two", "Three", "Four", "Five"};
-//
-//        std::set<int> stl_set;
-//        ft::set<int> ft_set;
-//
-//        for (int i = 0; i < 5; i++)
-//        {
-//            stl_set.insert(range_int[i]);
-//            ft_set.insert(range_int[i]);
-//        }
-//
-//        fs.open("./tester/set_output/clear", std::fstream::in | std::fstream::out | std::fstream::trunc);
-//        printSetAttributes(fs, stl_set, ft_set);
-//
-//        stl_set.clear();
-//        ft_set.clear();
-//
-//        std::cout << ((printSetAttributes(fs, stl_set, ft_set) == true) ? OK : NOP );
-//
-//        fs << "\nCode executed:\n";
-//        fs << "¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\n";
-//        fs << "const int range_int[] = {148, 9874, -987, 52, 96};\n";
-//        fs << "const std::string range_str[] = {\"One\", \"Two\", \"Three\", \"Four\", \"Five\"};\n";
-//        fs << "ft::set<int> ft_set;\n";
-//        fs << "for (int i = 0; i < 5; i++)\n";
-//        fs << "    ft_set.insert(range_int[i]);\n";
-//        fs << "ft_set.clear()\n";
-//        fs << "\nCompared with:\n";
-//        fs << "¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\n";
-//        fs << "const int range_int[] = {148, 9874, -987, 52, 96};\n";
-//        fs << "const std::string range_str[] = {\"One\", \"Two\", \"Three\", \"Four\", \"Five\"};\n";
-//        fs << "std::set<int> stl_set;\n";
-//        fs << "for (int i = 0; i < 5; i++)\n";
-//        fs << "    stl_set.insert(range_int[i]);\n";
-//        fs << "stl_set.clear()\n";
-//        fs.close();
-//    }
+    /* Insert single */
+    {
+        std::set<int> stl_set;
+        ft::set<int> ft_set;
+
+        stl_set.insert(42);
+        ft_set.insert(42);
+
+        fs.open("./tester/set_output/insert_single", std::fstream::in | std::fstream::out | std::fstream::trunc);
+        std::cout << ((printSetAttributes(fs, stl_set, ft_set) == true) ? OK : NOP );
+
+        fs << "\nCode executed:\n";
+        fs << "¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\n";
+        fs << "ft::set<int> ft_set;\n";
+        fs << "ft_set.insert(42, \"La famille\"));\n";
+        fs << "\nCompared with:\n";
+        fs << "¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\n";
+        fs << "std::set<int> stl_set;\n";
+        fs << "stl_set.insert(42, \"La famlle\"));\n";
+        fs.close();
+    }
+
+    /* Insert hint */
+    {
+        const int range_int[] = {584, 96, 21, -54, 36};
+        const std::string range_str[] = {"One", "Two", "Three", "Four", "Five"};
+
+        std::set<int> stl_set;
+        ft::set<int> ft_set;
+
+        for (int i = 0; i < 5; i++)
+        {
+            stl_set.insert(range_int[i]);
+            ft_set.insert(range_int[i]);
+        }
+
+        fs.open("./tester/set_output/insert_hint", std::fstream::in | std::fstream::out | std::fstream::trunc);
+        printSetAttributes(fs, stl_set, ft_set);
+
+        stl_set.insert(++(stl_set.begin()), 42);
+        ft_set.insert(++(ft_set.begin()), 42);
+
+        std::cout << ((printSetAttributes(fs, stl_set, ft_set) == true) ? OK : NOP );
+
+        fs << "\nCode executed:\n";
+        fs << "¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\n";
+        fs << "const int range_int[] = {584, 96, 21, -54, 36};\n";
+        fs << "const std::string range_str[] = {\"One\", \"Two\", \"Three\", \"Four\", \"Five\"};\n";
+        fs << "ft::set<int> ft_set;\n";
+        fs << "for (int i = 0; i < 5; i++)\n";
+        fs << "    ft_set.insert(range_int[i]);\n";
+        fs << "ft_set.insert(++(ft_set.begin()), 42, \"Nice\"));\n";
+        fs << "\nCompared with:\n";
+        fs << "¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\n";
+        fs << "const int range_int[] = {584, 96, 21, -54, 36};\n";
+        fs << "const std::string range_str[] = {\"One\", \"Two\", \"Three\", \"Four\", \"Five\"};\n";
+        fs << "std::set<int> stl_set;\n";
+        fs << "for (int i = 0; i < 5; i++)\n";
+        fs << "    stl_set.insert(range_int[i]);\n";
+        fs << "stl_set.insert(++(stl_set.begin()), 42, \"Nice\");\n";
+        fs.close();
+    }
+
+    /* Insert Range */
+    {
+        const int range_int[] = {754, -985, 58, 999, 5};
+        const std::string range_str[] = {"One", "Two", "Three", "Four", "Five"};
+
+        std::set<int> stl_set_one;
+        ft::set<int> ft_set_one;
+        std::set<int> stl_set_two;
+        ft::set<int> ft_set_two;
+
+        for (int i = 0; i < 5; i++)
+        {
+            stl_set_one.insert(range_int[i]);
+            ft_set_one.insert(range_int[i]);
+            stl_set_two.insert(range_int[i]+ 266);
+            ft_set_two.insert(range_int[i] + 266);
+        }
+
+        fs.open("./tester/set_output/insert_range", std::fstream::in | std::fstream::out | std::fstream::trunc);
+        printSetAttributes(fs, stl_set_one, ft_set_one);
+        printSetAttributes(fs, stl_set_two, ft_set_two);
+
+        stl_set_one.insert(stl_set_two.begin(), stl_set_two.end());
+        ft_set_one.insert(ft_set_two.begin(), ft_set_two.end());
+
+        std::cout << ((printSetAttributes(fs, stl_set_one, ft_set_one) == true) ? OK : NOP );
+
+        fs << "\nCode executed:\n";
+        fs << "¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\n";
+        fs << "const int range_int[] = {754, -985, 58, 999, 5};\n";
+        fs << "const std::string range_str[] = {\"One\", \"Two\", \"Three\", \"Four\", \"Five\"};\n";
+        fs << "ft::set<int> ft_set_one;\n";
+        fs << "ft::set<int> ft_set_two;\n";
+        fs << "for (int i = 0; i < 5; i++)\n";
+        fs << "{\n";
+        fs << "	ft_set_one.insert(range_int[i]);\n";
+        fs << "	ft_set_two.insert(range_int[i] + 266, range_str[i] + \"_two\"));\n";
+        fs << "}\n";
+        fs << "Sending output...\n";
+        fs << "ft_set_one.insert(ft_set_two.begin(), ft_set_two.end());\n";
+        fs << "\nCompared with:\n";
+        fs << "¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\n";
+        fs << "const int range_int[] = {754, -985, 58, 999, 5};\n";
+        fs << "const std::string range_str[] = {\"One\", \"Two\", \"Three\", \"Four\", \"Five\"};\n";
+        fs << "std::set<int> stl_set_one;\n";
+        fs << "std::set<int> stl_set_two;\n";
+        fs << "for (int i = 0; i < 5; i++)\n";
+        fs << "{\n";
+        fs << "	stl_set_one.insert(range_int[i]);\n";
+        fs << "	stl_set_two.insert(range_int[i]+ 266, range_str[i] + \"_two\"));\n";
+        fs << "}\n";
+        fs << "Sending output...\n";
+        fs << "stl_set_one.insert(stl_set_two.begin(), stl_set_two.end());\n";
+        fs.close();
+
+    }
+
+    /* Erase single */
+    {
+        const int range_int[] = {-9, -84, -77, 24, 56};
+        const std::string range_str[] = {"One", "Two", "Three", "Four", "Five"};
+
+        std::set<int> stl_set;
+        ft::set<int> ft_set;
+
+        for (int i = 0; i < 5; i++)
+        {
+            stl_set.insert(range_int[i]);
+            ft_set.insert(range_int[i]);
+        }
+
+        fs.open("./tester/set_output/erase_single", std::fstream::in | std::fstream::out | std::fstream::trunc);
+        printSetAttributes(fs, stl_set, ft_set);
+
+        stl_set.erase(stl_set.begin());
+        ft_set.erase(ft_set.begin());
+
+        std::cout << ((printSetAttributes(fs, stl_set, ft_set) == true) ? OK : NOP );
+
+        fs << "\nCode executed:\n";
+        fs << "¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\n";
+        fs << "const int range_int[] = {-9, -84, -77, 24, 56};\n";
+        fs << "const std::string range_str[] = {\"One\", \"Two\", \"Three\", \"Four\", \"Five\"};\n";
+        fs << "ft::set<int> ft_set;\n";
+        fs << "for (int i = 0; i < 5; i++)\n";
+        fs << "    ft_set.insert(range_int[i]);\n";
+        fs << "ft_set.erase(ft_set.begin());\n";
+        fs << "\nCompared with:\n";
+        fs << "¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\n";
+        fs << "const int range_int[] = {-9, -84, -77, 24, 56};\n";
+        fs << "const std::string range_str[] = {\"One\", \"Two\", \"Three\", \"Four\", \"Five\"};\n";
+        fs << "std::set<int> stl_set;\n";
+        fs << "for (int i = 0; i < 5; i++)\n";
+        fs << "    stl_set.insert(range_int[i]);\n";
+        fs << "stl_set.erase(stl_set.begin());\n";
+        fs.close();
+    }
+
+    /* Erase key */
+    {
+        const int range_int[] = {1452, 3651, -98, 84, 899};
+        const std::string range_str[] = {"One", "Two", "Three", "Four", "Five"};
+
+        std::set<int> stl_set;
+        ft::set<int> ft_set;
+
+        for (int i = 0; i < 5; i++)
+        {
+            stl_set.insert(range_int[i]);
+            ft_set.insert(range_int[i]);
+        }
+
+        fs.open("./tester/set_output/erase_key", std::fstream::in | std::fstream::out | std::fstream::trunc);
+        printSetAttributes(fs, stl_set, ft_set);
+
+        stl_set.erase(-98);
+        ft_set.erase(-98);
+
+        std::cout << ((printSetAttributes(fs, stl_set, ft_set) == true) ? OK : NOP );
+
+        fs << "\nCode executed:\n";
+        fs << "¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\n";
+        fs << "const int range_int[] = {1452, 3651, -98, 84, 899};\n";
+        fs << "const std::string range_str[] = {\"One\", \"Two\", \"Three\", \"Four\", \"Five\"};\n";
+        fs << "ft::set<int> ft_set;\n";
+        fs << "for (int i = 0; i < 5; i++)\n";
+        fs << "    ft_set.insert(range_int[i]);\n";
+        fs << "ft_set.erase(-98);\n";
+        fs << "\nCompared with:\n";
+        fs << "¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\n";
+        fs << "const int range_int[] = {1452, 3651, -98, 84, 899};\n";
+        fs << "const std::string range_str[] = {\"One\", \"Two\", \"Three\", \"Four\", \"Five\"};\n";
+        fs << "std::set<int> stl_set;\n";
+        fs << "for (int i = 0; i < 5; i++)\n";
+        fs << "    stl_set.insert(range_int[i]);\n";
+        fs << "stl_set.erase(-98);\n";
+        fs.close();
+    }
+
+    /* Erase range */
+    {
+        const int range_int[] = {-854, 1, 965, -9, 755};
+        const std::string range_str[] = {"One", "Two", "Three", "Four", "Five"};
+
+        std::set<int> stl_set;
+        ft::set<int> ft_set;
+
+        for (int i = 0; i < 5; i++)
+        {
+            stl_set.insert(range_int[i]);
+            ft_set.insert(range_int[i]);
+        }
+
+        fs.open("./tester/set_output/erase_range", std::fstream::in | std::fstream::out | std::fstream::trunc);
+        printSetAttributes(fs, stl_set, ft_set);
+
+        std::set<int>::iterator stl_it_beg = stl_set.begin();
+        ft::set<int>::iterator ft_it_beg = ft_set.begin();
+        std::set<int>::iterator stl_it_end = stl_set.end();
+        ft::set<int>::iterator ft_it_end = ft_set.end();
+
+        for (int i = 0; i < 2; i++)
+        {
+            stl_it_beg++;
+            ft_it_beg++;
+        }
+        stl_it_end--;
+        ft_it_end--;
+
+        stl_set.erase(stl_it_beg, stl_it_end);
+        ft_set.erase(ft_it_beg, ft_it_end);
+
+        std::cout << ((printSetAttributes(fs, stl_set, ft_set) == true) ? OK : NOP );
+
+        fs << "\nCode executed:\n";
+        fs << "¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\n";
+        fs << "const int range_int[] = {-854, 1, 965, -9, 755};\n";
+        fs << "const std::string range_str[] = {\"One\", \"Two\", \"Three\", \"Four\", \"Five\"};\n";
+        fs << "ft::set<int> ft_set;\n";
+        fs << "for (int i = 0; i < 5; i++)\n";
+        fs << "    ft_set.insert(range_int[i]);\n";
+        fs << "ft::set<int>::iterator ft_it_beg = ft_set.begin();\n";
+        fs << "ft::set<int>::iterator ft_it_end = ft_set.end();\n";
+        fs << "for (int i = 0; i < 2; i++)\n";
+        fs << "	ft_it_beg++;\n";
+        fs << "ft_it_end--;\n";
+        fs << "ft_set.erase(ft_it_beg, ft_it_end);\n";
+        fs << "\nCompared with:\n";
+        fs << "¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\n";
+        fs << "const int range_int[] = {-854, 1, 965, -9, 755};\n";
+        fs << "const std::string range_str[] = {\"One\", \"Two\", \"Three\", \"Four\", \"Five\"};\n";
+        fs << "std::set<int> stl_set;\n";
+        fs << "for (int i = 0; i < 5; i++)\n";
+        fs << "    stl_set.insert(range_int[i]);\n";
+        fs << "std::set<int>::iterator stl_it_beg = stl_set.begin();\n";
+        fs << "std::set<int>::iterator stl_it_end = stl_set.end();\n";
+        fs << "for (int i = 0; i < 2; i++)\n";
+        fs << "	stl_it_beg++;\n";
+        fs << "stl_it_end--;\n";
+        fs << "stl_set.erase(stl_it_beg, stl_it_end);\n";
+        fs.close();
+    }
+
+    /* Swap */
+    {
+        const int range_int[] = {489, 851, 32, -98, 8};
+        const std::string range_str[] = {"One", "Two", "Three", "Four", "Five"};
+
+        std::set<int> stl_set_one;
+        ft::set<int> ft_set_one;
+        std::set<int> stl_set_two;
+        ft::set<int> ft_set_two;
+
+        for (int i = 0; i < 5; i++)
+        {
+            stl_set_one.insert(range_int[i]);
+            ft_set_one.insert(range_int[i]);
+            stl_set_two.insert(range_int[i]);
+            ft_set_two.insert(range_int[i]);
+        }
+
+        fs.open("./tester/set_output/swap", std::fstream::in | std::fstream::out | std::fstream::trunc);
+        printSetAttributes(fs, stl_set_one, ft_set_one);
+        printSetAttributes(fs, stl_set_two, ft_set_two);
+
+        stl_set_one.swap(stl_set_two);
+        ft_set_one.swap(ft_set_two);
+
+        std::cout << ((printSetAttributes(fs, stl_set_one, ft_set_one) == true) ? OK : NOP );
+        std::cout << ((printSetAttributes(fs, stl_set_two, ft_set_two) == true) ? OK : NOP );
+
+        fs << "\nCode executed:\n";
+        fs << "¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\n";
+        fs << "const int range_int[] = {489, 851, 32, -98, 8};\n";
+        fs << "const std::string range_str[] = {\"One\", \"Two\", \"Three\", \"Four\", \"Five\"};\n";
+        fs << "ft::set<int> ft_set_one;\n";
+        fs << "ft::set<int> ft_set_two;\n";
+        fs << "for (int i = 0; i < 5; i++)\n";
+        fs << "{\n";
+        fs << "		ft_set_one.insert(range_int[i]);\n";
+        fs << "		ft_set_two.insert(range_int[i] + 1i]);\n";
+        fs << "}\n";
+        fs << "Sending Output...\n";
+        fs << "ft_set_one.swap(ft_set_two);\n";
+        fs << "\nCompared with:\n";
+        fs << "¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\n";
+        fs << "const int range_int[] = {489, 851, 32, -98, 8};\n";
+        fs << "const std::string range_str[] = {\"One\", \"Two\", \"Three\", \"Four\", \"Five\"};\n";
+        fs << "std::set<int> stl_set_one;\n";
+        fs << "std::set<int> stl_set_two;\n";
+        fs << "for (int i = 0; i < 5; i++)\n";
+        fs << "{\n";
+        fs << "		stl_set_one.insert(range_int[i]);\n";
+        fs << "		stl_set_two.insert(range_int[i]+ 1i]);\n";
+        fs << "}\n";
+        fs << "Sending Output...\n";
+        fs << "stl_set_one.swap(stl_set_two);\n";
+        fs.close();
+    }
+
+    /* Clear */
+    {
+        const int range_int[] = {148, 9874, -987, 52, 96};
+        const std::string range_str[] = {"One", "Two", "Three", "Four", "Five"};
+
+        std::set<int> stl_set;
+        ft::set<int> ft_set;
+
+        for (int i = 0; i < 5; i++)
+        {
+            stl_set.insert(range_int[i]);
+            ft_set.insert(range_int[i]);
+        }
+
+        fs.open("./tester/set_output/clear", std::fstream::in | std::fstream::out | std::fstream::trunc);
+        printSetAttributes(fs, stl_set, ft_set);
+
+        stl_set.clear();
+        ft_set.clear();
+
+        std::cout << ((printSetAttributes(fs, stl_set, ft_set) == true) ? OK : NOP );
+
+        fs << "\nCode executed:\n";
+        fs << "¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\n";
+        fs << "const int range_int[] = {148, 9874, -987, 52, 96};\n";
+        fs << "const std::string range_str[] = {\"One\", \"Two\", \"Three\", \"Four\", \"Five\"};\n";
+        fs << "ft::set<int> ft_set;\n";
+        fs << "for (int i = 0; i < 5; i++)\n";
+        fs << "    ft_set.insert(range_int[i]);\n";
+        fs << "ft_set.clear()\n";
+        fs << "\nCompared with:\n";
+        fs << "¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\n";
+        fs << "const int range_int[] = {148, 9874, -987, 52, 96};\n";
+        fs << "const std::string range_str[] = {\"One\", \"Two\", \"Three\", \"Four\", \"Five\"};\n";
+        fs << "std::set<int> stl_set;\n";
+        fs << "for (int i = 0; i < 5; i++)\n";
+        fs << "    stl_set.insert(range_int[i]);\n";
+        fs << "stl_set.clear()\n";
+        fs.close();
+    }
 
     std::cout << std::endl;
-    std::cout << "Observers : ";
+    std::cout << "Observers\t: ";
 
     /* Key comp */
     {
@@ -1174,7 +1171,7 @@ void test_set()
     }
 
     std::cout << std::endl;
-    std::cout << "Operations : ";
+    std::cout << "Operations\t: ";
 
     /* Find exist */
     {

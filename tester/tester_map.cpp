@@ -112,7 +112,7 @@ void test_map()
     std::fstream fs;
 
     /* Constructors */
-    std::cout << "Constructors : ";
+    std::cout << "Constructors\t: ";
 
     /* Default constructor */
     {
@@ -258,7 +258,7 @@ void test_map()
     }
 
     std::cout << std::endl;
-    std::cout << "Iterators : ";
+    std::cout << "Iterators\t: ";
 
     /* Begin */
     {
@@ -640,7 +640,7 @@ void test_map()
     }
 
     std::cout << std::endl;
-    std::cout << "Capacity : ";
+    std::cout << "Capacity\t: ";
 
     /* Empty true */
     {
@@ -763,7 +763,7 @@ void test_map()
     }
 
     std::cout << std::endl;
-    std::cout << "Element access : ";
+    std::cout << "Element access\t: ";
 
     /* Operator [] */
     {
@@ -815,7 +815,7 @@ void test_map()
 
     std::cout << std::endl;
 
-    std::cout << "Modifier : ";
+    std::cout << "Modifier\t: ";
     /* Insert single */
     {
         std::map<int, std::string> stl_map;
@@ -1184,7 +1184,7 @@ void test_map()
     }
 
     std::cout << std::endl;
-    std::cout << "Observers : ";
+    std::cout << "Observers\t: ";
 
     /* Key comp */
     {
@@ -1231,7 +1231,7 @@ void test_map()
     }
 
     std::cout << std::endl;
-    std::cout << "Operations : ";
+    std::cout << "Operations\t: ";
 
     /* Find exist */
     {
