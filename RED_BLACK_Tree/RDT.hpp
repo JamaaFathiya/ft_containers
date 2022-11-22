@@ -29,8 +29,8 @@ namespace ft {
 
         typedef tree_iter<T, node_ptr>              iter;
         typedef tree_iter<const T, node_ptr>        const_iter;
-        typedef ft::rev_tree_iter<iter>          rev_iter;
-        typedef ft::rev_tree_iter<const_iter>    const_rev_iter;
+        typedef ft::rev_tree_iter<iter>             rev_iter;
+        typedef ft::rev_tree_iter<const_iter>       const_rev_iter;
 
 
         RedBlackTree(const cmp_func& cmp): BST(cmp){}
@@ -374,6 +374,7 @@ namespace ft {
                 begin = tmp;
             }
         }
+
         /*---------------------- Operators Overloads -------------------*/
 
         RedBlackTree& operator=(const RedBlackTree& other){
@@ -414,6 +415,7 @@ namespace ft {
             return *this;
         }
 
+        //implicit conversion operator which converts the non-const version of your iterator to the const version.
         operator tree_iter<const value_type, NodePtr>() const{
             return tree_iter<const value_type, NodePtr>(_ptr);
         }
@@ -464,13 +466,13 @@ namespace ft {
     struct rev_tree_iter {
 
     public:
-        typedef iter iterator_type;
-        typedef typename ft::iterator_traits<iter>::value_type value_type;
-        typedef typename ft::iterator_traits<iter>::difference_type difference_type;
-        typedef typename ft::iterator_traits<iter>::pointer pointer;
-        typedef typename ft::iterator_traits<iter>::reference reference;
-        typedef typename ft::iterator_traits<iter>::iterator_category iterator_category;
-        typedef typename iter::type_pointer type_pointer;
+        typedef iter                                                    iterator_type;
+        typedef typename ft::iterator_traits<iter>::value_type          value_type;
+        typedef typename ft::iterator_traits<iter>::difference_type     difference_type;
+        typedef typename ft::iterator_traits<iter>::pointer             pointer;
+        typedef typename ft::iterator_traits<iter>::reference           reference;
+        typedef typename ft::iterator_traits<iter>::iterator_category   iterator_category;
+        typedef typename iter::type_pointer                             type_pointer;
 
     private:
         iter _ptr;
