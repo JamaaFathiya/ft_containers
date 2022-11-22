@@ -379,6 +379,7 @@ namespace ft {
         RedBlackTree& operator=(const RedBlackTree& other){
 
             this->clear(this->_root);
+            this->_size = 0;
             this->_root = this->_tnull;
             this->insert_range(other.begin(), other.end());
             return *this;
@@ -516,7 +517,8 @@ namespace ft {
         }
 
         type_pointer operator->() const {
-            return (_ptr.base())->_data;
+            iter tmp = _ptr;
+            return ((--tmp).base())->_data;
         }
 
         bool operator!=(const rev_tree_iter& it){
