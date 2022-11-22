@@ -1,5 +1,4 @@
 #pragma once
-#include <map>
 #include "../RED_BLACK_Tree/RDT.hpp"
 #include "../utility/ft_pair.hpp"
 #include "../utility/ft_lexicographical_compare.hpp"
@@ -13,17 +12,17 @@ namespace ft {
     >
     class map {
     public:
-        typedef Key key_type;
-        typedef T mapped_type;
-        typedef ft::pair<const key_type, mapped_type> value_type;
-        typedef Compare key_compare;
-        typedef Allocator allocator_type;
-        typedef typename allocator_type::reference reference;
-        typedef typename allocator_type::const_reference const_reference;
-        typedef typename allocator_type::pointer pointer;
-        typedef typename allocator_type::const_pointer const_pointer;
-        typedef typename allocator_type::size_type size_type;
-        typedef typename allocator_type::difference_type difference_type;
+        typedef Key                                         key_type;
+        typedef T                                           mapped_type;
+        typedef ft::pair<const key_type, mapped_type>       value_type;
+        typedef Compare                                     key_compare;
+        typedef Allocator                                   allocator_type;
+        typedef typename allocator_type::reference          reference;
+        typedef typename allocator_type::const_reference    const_reference;
+        typedef typename allocator_type::pointer            pointer;
+        typedef typename allocator_type::const_pointer      const_pointer;
+        typedef typename allocator_type::size_type          size_type;
+        typedef typename allocator_type::difference_type    difference_type;
 
     private:
         class value_compare : public std::binary_function<value_type, value_type, bool> {
@@ -39,17 +38,17 @@ namespace ft {
         };
 
     public:
-        typedef value_compare vc;
-        typedef ft::RedBlackTree<value_type, key_type, mapped_type, value_compare, allocator_type> _base;
-        typedef typename _base::iter iterator;
-        typedef typename _base::const_iter const_iterator;
-        typedef typename _base::rev_iter reverse_iterator;
-        typedef typename _base::const_rev_iter const_reverse_iterator;
+        typedef ft::RedBlackTree<value_type, key_type, mapped_type, value_compare, allocator_type>  _base;
+        typedef value_compare                                                                       vc;
+        typedef typename _base::iter                                                                iterator;
+        typedef typename _base::const_iter                                                          const_iterator;
+        typedef typename _base::rev_iter                                                            reverse_iterator;
+        typedef typename _base::const_rev_iter                                                      const_reverse_iterator;
 
     private:
-        _base _tree;
-        key_compare _cmp;
-        allocator_type _alloc;
+        _base           _tree;
+        key_compare     _cmp;
+        allocator_type  _alloc;
 
     public:
 
@@ -60,13 +59,11 @@ namespace ft {
 
         template<class InputIt>
         map(InputIt first, InputIt last, const key_compare &comp = key_compare(),
-            const Allocator &alloc = allocator_type()): _tree(vc(comp)) {
-            _alloc = alloc;
-            _cmp = comp;
-            _tree.template insert_range(first, last);
+            const Allocator &alloc = allocator_type()): _tree(vc(comp)) ,_cmp(comp), _alloc(alloc) {
+            _tree.insert_range(first, last); //template
         }
 
-        map(const map &other) : _tree(vc(other._cmp)) {
+        map(const map &other) : _tree(vc(other._cmp)), _cmp(other._cmp), _alloc(other._alloc) {
             this->_tree = other._tree;
         }
 
@@ -133,7 +130,7 @@ namespace ft {
         mapped_type &operator[](const Key &key) {
             iterator tmp = find(key);
             if (tmp != end())
-                return (_tree.search_key(key));
+                return (tmp->second);
             ft::pair<iterator, bool> n = insert(ft::make_pair(key, mapped_type()));
             return n.first->second;
         }
@@ -181,7 +178,6 @@ namespace ft {
             return ft::make_pair(lower_bound(key), upper_bound(key));
         }
 
-//
         iterator lower_bound(const Key &key) {
             iterator it = _tree.begin();
             for (; it != _tree.end(); it++) {
@@ -191,7 +187,6 @@ namespace ft {
             return _tree.end();
         }
 
-//
         const_iterator lower_bound(const Key &key) const {
             iterator it = _tree.begin();
             for (; it != _tree.end(); it++) {
@@ -220,6 +215,7 @@ namespace ft {
         }
 
         /*------------------- Lookup ----------------------*/
+
         key_compare key_comp() const {
             return this->_cmp;
         }
@@ -227,7 +223,6 @@ namespace ft {
         value_compare value_comp() const {
             return value_compare(_cmp);
         }
-
 
         /*------------------ Modifiers --------------------*/
 
@@ -273,9 +268,6 @@ namespace ft {
             _tree.delete_range(first, last);
         }
 
-        void print(){
-            _tree.inorder_traverse(_tree.root());
-        }
     };
 
 
