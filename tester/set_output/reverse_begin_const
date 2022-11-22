@@ -1,0 +1,45 @@
+
+══════════════════════════════════════════════════════════════
+set attributes : 
+STL : 
+Empty       : false
+Size        : 5
+Max size    : 576460752303423487
+Content     : [[-325], [-98], [-65], [99], [859], ]
+
+FT : 
+Empty    [✔]: false
+Size     [✔]: 5
+Max size [✔]: 576460752303423487
+Content  [✔]: [[-325], [-98], [-65], [99], [859], ]
+══════════════════════════════════════════════════════════════
+
+══════════════════════════════════════════════════════════════
+Value from :
+STL    : 859
+FT  [✔]: 859
+══════════════════════════════════════════════════════════════
+
+══════════════════════════════════════════════════════════════
+Value from :
+STL    : 859
+FT  [✔]: 859
+══════════════════════════════════════════════════════════════
+
+Code executed:
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+const int range_int[] = {859, 99, -325, -65, -98};
+const std::string range_str[] = {"One", "Two", "Three", "Four", "Five"};
+ft::set<int> ft_set;
+for (int i = 0; i < 5; i++)
+    ft_set.insert(range_int[i]);
+ft::set<int>::const_reverse_iterator ft_it = ft_set.rbegin();
+
+Compared with:
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+const int range_int[] = {859, 99, -325, -65, -98};
+const std::string range_str[] = {"One", "Two", "Three", "Four", "Five"};
+std::set<int> stl_set;
+for (int i = 0; i < 5; i++)
+    stl_set.insert(range_int[i]);
+std::set<int>::const_reverse_iterator stl_it = stl_set.rbegin();

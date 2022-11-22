@@ -1,0 +1,47 @@
+
+══════════════════════════════════════════════════════════════
+set attributes : 
+STL : 
+Empty       : false
+Size        : 5
+Max size    : 576460752303423487
+Content     : [[-99], [77], [366], [584], [965], ]
+
+FT : 
+Empty    [✔]: false
+Size     [✔]: 5
+Max size [✔]: 576460752303423487
+Content  [✔]: [[-99], [77], [366], [584], [965], ]
+══════════════════════════════════════════════════════════════
+
+══════════════════════════════════════════════════════════════
+Value from :
+STL    : 965
+FT  [✔]: 965
+══════════════════════════════════════════════════════════════
+
+══════════════════════════════════════════════════════════════
+Value from :
+STL    : 965
+FT  [✔]: 965
+══════════════════════════════════════════════════════════════
+
+Code executed:
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+const int range_int[] = {-99, 584, 965, 366, 77};
+const std::string range_str[] = {"One", "Two", "Three", "Four", "Five"};
+ft::set<int> ft_set;
+for (int i = 0; i < 5; i++)
+    ft_set.insert(range_int[i]);
+ft::set<int>::iterator ft_it = ft_set.end();
+--ft_it;
+
+Compared with:
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+const int range_int[] = {-99, 584, 965, 366, 77};
+const std::string range_str[] = {"One", "Two", "Three", "Four", "Five"};
+std::set<int> stl_set;
+for (int i = 0; i < 5; i++)
+    stl_set.insert(range_int[i]);
+std::set<int>::iterator stl_it = stl_set.end();
+--stl_it;

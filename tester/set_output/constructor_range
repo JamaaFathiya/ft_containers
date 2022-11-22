@@ -1,0 +1,48 @@
+
+══════════════════════════════════════════════════════════════
+set attributes : 
+STL : 
+Empty       : false
+Size        : 5
+Max size    : 576460752303423487
+Content     : [[-652], [-210], [-4], [54], [98], ]
+
+FT : 
+Empty    [✔]: false
+Size     [✔]: 5
+Max size [✔]: 576460752303423487
+Content  [✔]: [[-652], [-210], [-4], [54], [98], ]
+══════════════════════════════════════════════════════════════
+
+══════════════════════════════════════════════════════════════
+set attributes : 
+STL : 
+Empty       : false
+Size        : 5
+Max size    : 576460752303423487
+Content     : [[-652], [-210], [-4], [54], [98], ]
+
+FT : 
+Empty    [✔]: false
+Size     [✔]: 5
+Max size [✔]: 576460752303423487
+Content  [✔]: [[-652], [-210], [-4], [54], [98], ]
+══════════════════════════════════════════════════════════════
+
+Code executed:
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+const int range_int[] = {-652, -4, 98, 54, -210};
+const std::string range_str[] = {"One", "Two", "Three", "Four", "Five"};
+ft::set<int> ft_set;
+for (int i = 0; i < 5; i++)
+    ft_set.insert(range_int[i]);
+ft::set<int> ft_set_copy(ft_set.begin(), ft_set.end());
+
+Compared with:
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+const int range_int[] = {-652, -4, 98, 54, -210};
+const std::string range_str[] = {"One", "Two", "Three", "Four", "Five"};
+std::set<int> stl_set;
+for (int i = 0; i < 5; i++)
+    stl_set.insert(range_int[i]);
+std::set<int> stl_set_copy(stl_set.begin(), stl_set.end());

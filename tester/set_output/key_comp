@@ -1,0 +1,14 @@
+
+Bool result : 
+ - STL : true
+ - FT  : true
+
+Code executed:
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+ft::set<int>::key_compare ft_key = ft::set<int>().key_comp();
+bool ft_res = ft_key(42, 99);
+
+Compared with:
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+std::set<int>::key_compare stl_key = std::set<int>().key_comp();
+bool stl_res = stl_key(42, 99);

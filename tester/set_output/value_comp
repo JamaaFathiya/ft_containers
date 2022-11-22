@@ -1,0 +1,14 @@
+
+Bool result : 
+ - STL : false
+ - FT  : false
+
+Code executed:
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+ft::set<int>::value_compare ft_key = ft::set<int>().value_comp();
+bool ft_res = ft_key(99, "End"), 42, "Noice"));
+
+Compared with:
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+std::set<int>::value_compare stl_key = std::set<int>().value_comp();
+bool stl_res = stl_key(99, "End") 42, "Noice"));

@@ -51,8 +51,8 @@ static bool printSingleValue(std::fstream& fs, const T& t1, const T& t2)
 bool printBoolResult(std::fstream& fs, bool stl_bool, bool ft_bool);
 
 void test_vector();
-// void test_list();
-// void test_map();
+void test_set();
+void test_map();
 void test_stack();
 
 #endif
